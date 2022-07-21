@@ -10,7 +10,9 @@ import {LktRouter} from "../classes/LktRouter";
  * @returns {LktResource}
  */
 export const createHTTPResource = (name, path, method) => {
-    return new LktResource(name, path, method);
+    let r = new LktResource(name, path, method);
+    registerHTTPResource(r);
+    return getHTTPResource(name);
 }
 
 /**
@@ -21,7 +23,9 @@ export const createHTTPResource = (name, path, method) => {
  * @returns {LktEnvironment}
  */
 export const createHTTPEnvironment = (name, url, auth) => {
-    return new LktEnvironment(name, url, auth);
+    let r = new LktEnvironment(name, url, auth);
+    registerHTTPEnvironment(r);
+    return getHTTPEnvironment(name);
 }
 
 /**

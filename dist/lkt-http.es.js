@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { mergeObjects, time, emptyPromise, isFunction, trim, cloneObject, isUndefined, extractFillData, fill, deleteObjectKeys, isObject } from "lkt-tools";
+import { mergeObjects, isUndefined, emptyPromise, time, isFunction, trim, cloneObject, extractFillData, fill, deleteObjectKeys, isObject } from "lkt-tools";
 import axios from "axios";
 const SUCCESS_STATUSES = [200, 201, 202];
 const CALL_HTTP_RESOURCE_OPTIONS = {
@@ -96,12 +96,17 @@ const buildResource = (resource, args) => {
   };
 };
 const callHTTPResource = function(resource, params = {}) {
-  if (resource.isFetching && !resource.enableMultipleCalling) {
-    return new Promise((resolve, reject) => {
-      resolve(void 0);
-    });
+  const emptyResponse = (resolve, reject) => {
+    resolve(void 0);
+  };
+  if (isUndefined(resource)) {
+    console.error("Invalid resource", resource);
+    return emptyPromise(emptyResponse);
   }
-  let data = buildResource(resource, params, resource.environment);
+  if (resource.isFetching && !resource.enableMultipleCalling) {
+    return emptyPromise(emptyResponse);
+  }
+  let data = buildResource(resource, params);
   if (data.method === "get" && resource.cacheTime > 0 && !resource.forceRefreshFlag && resource.cache[data.url]) {
     let now = time();
     let limit = resource.cache[data.url].moment + resource.cacheTime;
@@ -228,10 +233,10 @@ class LktEnvironment {
   }
 }
 const _LktRouter = class {
-  static addResource(resource = new LktResource()) {
+  static addResource(resource) {
     _LktRouter.RESOURCES[resource.name] = resource;
   }
-  static addEnvironment(environment = new LktEnvironment()) {
+  static addEnvironment(environment) {
     if (isUndefined(_LktRouter.DEFAULT_ENVIRONMENT)) {
       _LktRouter.DEFAULT_ENVIRONMENT = environment.name;
     }
@@ -255,10 +260,14 @@ __publicField(LktRouter, "RESOURCES", []);
 __publicField(LktRouter, "ENVIRONMENTS", []);
 __publicField(LktRouter, "DEFAULT_ENVIRONMENT");
 const createHTTPResource = (name, path, method) => {
-  return new LktResource(name, path, method);
+  let r = new LktResource(name, path, method);
+  registerHTTPResource(r);
+  return getHTTPResource(name);
 };
 const createHTTPEnvironment = (name, url, auth) => {
-  return new LktEnvironment(name, url, auth);
+  let r = new LktEnvironment(name, url, auth);
+  registerHTTPEnvironment(r);
+  return getHTTPEnvironment(name);
 };
 const registerHTTPResource = (resource) => {
   LktRouter.addResource(resource);
@@ -295,7 +304,5 @@ const LktHttp = {
 export {
   createHTTPEnvironment,
   createHTTPResource,
-  LktHttp as default,
-  registerHTTPEnvironment,
-  registerHTTPResource
+  LktHttp as default
 };

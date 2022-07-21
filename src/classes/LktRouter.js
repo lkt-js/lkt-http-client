@@ -12,7 +12,7 @@ export class LktRouter {
      *
      * @param resource
      */
-    static addResource(resource = new LktResource()) {
+    static addResource(resource) {
         LktRouter.RESOURCES[resource.name] = resource;
     }
 
@@ -21,7 +21,7 @@ export class LktRouter {
      * @param environment
      * @returns {LktRouter}
      */
-    static addEnvironment(environment = new LktEnvironment()) {
+    static addEnvironment(environment) {
         if (isUndefined(LktRouter.DEFAULT_ENVIRONMENT)) {
             LktRouter.DEFAULT_ENVIRONMENT = environment.name;
         }

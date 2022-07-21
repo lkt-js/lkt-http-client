@@ -2,9 +2,7 @@ import {LktHttpMixin} from "./mixins/LktHttpMixin";
 
 export {
     createHTTPResource,
-    createHTTPEnvironment,
-    registerHTTPEnvironment,
-    registerHTTPResource
+    createHTTPEnvironment
 } from "./functions/startup-functions";
 
 const LktHttp = {

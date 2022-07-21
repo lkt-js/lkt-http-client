@@ -111,13 +111,20 @@ export const buildResource = (resource, args) => {
  */
 export const callHTTPResource = function(resource, params = {}) {
 
-    if (resource.isFetching && !resource.enableMultipleCalling){
-        return new Promise( (resolve, reject) => {
-            resolve(undefined);
-        });
+    const emptyResponse = (resolve, reject) => {
+        resolve(undefined);
+    };
+
+    if (isUndefined(resource)) {
+        console.error('Invalid resource', resource);
+        return emptyPromise(emptyResponse);
     }
 
-    let data = buildResource(resource, params, resource.environment);
+    if (resource.isFetching && !resource.enableMultipleCalling){
+        return emptyPromise(emptyResponse);
+    }
+
+    let data = buildResource(resource, params);
 
     if (data.method === 'get' && resource.cacheTime > 0 && !resource.forceRefreshFlag && resource.cache[data.url]){
         let now = time();
