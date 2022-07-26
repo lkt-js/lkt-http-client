@@ -1,0 +1,30 @@
+import { ILktObject } from "lkt-tools";
+export declare class LktResource {
+    name: string;
+    url: string;
+    method: string;
+    dataType: string;
+    currentPage: number;
+    params: ILktObject;
+    renameParams: ILktObject;
+    environment: string;
+    isFetching: boolean;
+    isFileUpload: boolean;
+    forceRefreshFlag: boolean;
+    unsafeParams: boolean;
+    onSuccess: Function;
+    validStatuses: Array<number>;
+    cacheTime: number;
+    cache: ILktObject;
+    constructor(name: string, url: string, method?: string);
+    setEnvironment(env: string): this;
+    setDataTypeJSON(): this;
+    enableUnsafeParams(): this;
+    setIsFileUpload(status?: boolean): this;
+    setParam(property: string): this;
+    renameParam(param: string, rename: string): this;
+    setSuccessStatuses(statuses?: number[]): this;
+    setForceRefresh(status?: boolean): this;
+    setOnSuccess(fn: Function): this;
+    call(params?: ILktObject): Promise<any>;
+}

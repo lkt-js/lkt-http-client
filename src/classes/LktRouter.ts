@@ -1,18 +1,20 @@
 import {LktResource} from "./LktResource";
 import {LktEnvironment} from "./LktEnvironment";
 import {isObject, isUndefined} from "lkt-tools";
+import {IResourceStack} from "../interfaces/IResourceStack";
+import {IEnvironmentStack} from "../interfaces/IEnvironmentStack";
 
 export class LktRouter {
 
-    static RESOURCES = [];
-    static ENVIRONMENTS = [];
-    static DEFAULT_ENVIRONMENT = undefined;
+    static RESOURCES: IResourceStack = {};
+    static ENVIRONMENTS: IEnvironmentStack = {};
+    static DEFAULT_ENVIRONMENT: string = undefined;
 
     /**
      *
      * @param resource
      */
-    static addResource(resource) {
+    static addResource(resource: LktResource) {
         LktRouter.RESOURCES[resource.name] = resource;
     }
 
@@ -21,7 +23,7 @@ export class LktRouter {
      * @param environment
      * @returns {LktRouter}
      */
-    static addEnvironment(environment) {
+    static addEnvironment(environment: LktEnvironment) {
         if (isUndefined(LktRouter.DEFAULT_ENVIRONMENT)) {
             LktRouter.DEFAULT_ENVIRONMENT = environment.name;
         }
@@ -31,9 +33,8 @@ export class LktRouter {
     /**
      *
      * @param name
-     * @returns {undefined|LktResource}
      */
-    static getResource(name) {
+    static getResource(name: string) {
         if (isObject(LktRouter.RESOURCES[name])) {
             return LktRouter.RESOURCES[name];
         }
@@ -43,9 +44,8 @@ export class LktRouter {
     /**
      *
      * @param name
-     * @returns {undefined|LktEnvironment}
      */
-    static getEnvironment(name) {
+    static getEnvironment(name: string) {
         if (isObject(LktRouter.ENVIRONMENTS[name])) {
             return LktRouter.ENVIRONMENTS[name];
         }

@@ -3,7 +3,7 @@ import {
     deleteObjectKeys,
     emptyPromise,
     extractFillData,
-    fill,
+    fill, ILktObject,
     isFunction,
     isUndefined,
     time, trim
@@ -12,6 +12,9 @@ import {SUCCESS_STATUSES} from "../constants";
 import axios from "axios";
 import {paramsToString} from "./helpers";
 import {getHTTPEnvironment} from "./startup-functions";
+import {Settings} from "../settings/Settings";
+import {LktResource} from "../classes/LktResource";
+import {IResourceBuild} from "../interfaces/IResourceBuild";
 
 /**
  *
@@ -19,7 +22,7 @@ import {getHTTPEnvironment} from "./startup-functions";
  * @param validStatuses
  * @returns {boolean}
  */
-export const getDefaultValidateStatus = (status, validStatuses = SUCCESS_STATUSES) =>  {
+export const getDefaultValidateStatus = (status: number, validStatuses: number[] = SUCCESS_STATUSES): boolean =>  {
     if (validStatuses.length === 0) {
         return true;
     }
@@ -32,10 +35,10 @@ export const getDefaultValidateStatus = (status, validStatuses = SUCCESS_STATUSE
  * @param args
  * @returns {{headers: undefined, method: string, data: *, auth: {}, validateStatus: (function(*): boolean), url: string}}
  */
-export const buildResource = (resource, args) => {
+export const buildResource = (resource: LktResource, args: ILktObject): IResourceBuild => {
     const p = cloneObject(resource.params);
     const method = resource.method.toLowerCase();
-    let r = {};
+    let r: ILktObject = {};
     for (let k in p) {
         if (p.hasOwnProperty(k)) {
             r[k] = p[k].default;
@@ -43,7 +46,7 @@ export const buildResource = (resource, args) => {
     }
 
     for (let key in args) {
-        if (resource.unsafeParams || key === resource.paginationVariable || (args.hasOwnProperty(key) && resource.params.hasOwnProperty(key))) {
+        if (resource.unsafeParams || (args.hasOwnProperty(key) && resource.params.hasOwnProperty(key))) {
             if (resource.renameParams.hasOwnProperty(key)) {
                 delete r[key];
                 r[resource.renameParams[key]] = args[key];
@@ -68,8 +71,8 @@ export const buildResource = (resource, args) => {
         }
     }
 
-    let toDelete = extractFillData(url, r, resource.fillLeftSeparator, resource.fillRightSeparator);
-    let link = fill(url, r, resource.fillLeftSeparator, resource.fillRightSeparator);
+    let toDelete = extractFillData(url, r, Settings.RESOURCE_PARAM_LEFT_SEPARATOR, Settings.RESOURCE_PARAM_RIGHT_SEPARATOR);
+    let link = fill(url, r, Settings.RESOURCE_PARAM_LEFT_SEPARATOR, Settings.RESOURCE_PARAM_RIGHT_SEPARATOR);
     r = deleteObjectKeys(r, toDelete);
 
     if (method === 'get' || method === 'open') {
@@ -98,7 +101,7 @@ export const buildResource = (resource, args) => {
         method,
         data: r,
         auth: auth,
-        validateStatus: (status) => getDefaultValidateStatus(status, resource.validStatuses),
+        validateStatus: (status: number) => getDefaultValidateStatus(status, resource.validStatuses),
         headers: headers
     }
 }
@@ -109,9 +112,9 @@ export const buildResource = (resource, args) => {
  * @param params
  * @returns {Promise<unknown>|Promise<Result>|Promise<any>|Promise|Promise<AxiosResponse<any>>}
  */
-export const callHTTPResource = function(resource, params = {}) {
+export const callHTTPResource = function(resource: LktResource, params: ILktObject = {}) {
 
-    const emptyResponse = (resolve, reject) => {
+    const emptyResponse = (resolve: any, reject: any) => {
         resolve(undefined);
     };
 
@@ -120,7 +123,7 @@ export const callHTTPResource = function(resource, params = {}) {
         return emptyPromise(emptyResponse);
     }
 
-    if (resource.isFetching && !resource.enableMultipleCalling){
+    if (resource.isFetching){
         return emptyPromise(emptyResponse);
     }
 
@@ -131,10 +134,10 @@ export const callHTTPResource = function(resource, params = {}) {
         let limit = resource.cache[data.url].moment + resource.cacheTime;
 
         if (limit - now > 0){
-            return emptyPromise((resolve, reject) => {
+            return emptyPromise((resolve: any, reject: any) => {
                 return resolve((() => {
-                    if (isFunction(resource.success)) {
-                        return resource.success(resource.cache[data.url].r);
+                    if (isFunction(resource.onSuccess)) {
+                        return resource.onSuccess(resource.cache[data.url].r);
                     }
                     return resource.cache[data.url].r;
                 })());
@@ -148,6 +151,7 @@ export const callHTTPResource = function(resource, params = {}) {
         case 'put':
         case 'delete':
             resource.isFetching = true;
+            //@ts-ignore
             return axios(data).then(promise => {
                 resource.isFetching = false;
                 if (data.method === 'get' && resource.cacheTime > 0){
@@ -158,8 +162,8 @@ export const callHTTPResource = function(resource, params = {}) {
                     resource.forceRefreshFlag = false;
                 }
 
-                if (isFunction(resource.success)) {
-                    return resource.success(promise);
+                if (isFunction(resource.onSuccess)) {
+                    return resource.onSuccess(promise);
                 }
                 return promise;
             }).catch(error => {
@@ -172,8 +176,8 @@ export const callHTTPResource = function(resource, params = {}) {
                 let contentDisposition = r.headers['content-disposition'],
                     fileName = '';
                 if (contentDisposition){
-                    contentDisposition = contentDisposition.split(';');
-                    contentDisposition.forEach(z => {
+                    let contentDispositionAux = contentDisposition.split(';');
+                    contentDispositionAux.forEach(z => {
                         let y = z.split('=');
                         if (trim(y[0]) === 'filename'){
                             let n = trim(y[1]);
@@ -182,9 +186,11 @@ export const callHTTPResource = function(resource, params = {}) {
                         }
                     });
                 }
+
+                //@ts-ignore
                 window.download(r.data, fileName);
-                if (isFunction(resource.success)) {
-                    return resource.success(r);
+                if (isFunction(resource.onSuccess)) {
+                    return resource.onSuccess(r);
                 }
                 return r;
             }).catch(error => {

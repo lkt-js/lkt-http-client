@@ -1,308 +1,176 @@
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-import { mergeObjects, isUndefined, emptyPromise, time, isFunction, trim, cloneObject, extractFillData, fill, deleteObjectKeys, isObject } from "lkt-tools";
-import axios from "axios";
-const SUCCESS_STATUSES = [200, 201, 202];
-const CALL_HTTP_RESOURCE_OPTIONS = {
-  forceRefresh: false
-};
-const paramsToString = (params) => {
-  let r = [];
-  for (let key in params) {
-    if (params.hasOwnProperty(key)) {
-      if (Array.isArray(params[key])) {
-        if (params[key].length > 0) {
-          r.push(key + "=" + JSON.stringify(params[key]));
-        }
-      } else {
-        r.push(key + "=" + params[key]);
-      }
-    }
+import { mergeObjects as H, isUndefined as R, emptyPromise as O, time as A, isFunction as S, trim as P, cloneObject as v, extractFillData as D, fill as U, deleteObjectKeys as y, isObject as _ } from "lkt-tools";
+import g from "axios";
+const p = [200, 201, 202], M = {
+  forceRefresh: !1
+}, L = "get", C = "post", I = "put", j = "delete", k = "open", b = "download", x = (t) => {
+  let e = [];
+  for (let n in t)
+    t.hasOwnProperty(n) && (Array.isArray(t[n]) ? t[n].length > 0 && e.push(n + "=" + JSON.stringify(t[n])) : e.push(n + "=" + t[n]));
+  return e.join("&");
+}, V = (t = {}) => H(M, t);
+class f {
+}
+f.RESOURCE_PARAM_LEFT_SEPARATOR = "{";
+f.RESOURCE_PARAM_RIGHT_SEPARATOR = "}";
+const G = (t, e = p) => e.length === 0 ? !0 : e.indexOf(t) !== -1, $ = (t, e) => {
+  const n = v(t.params), r = t.method.toLowerCase();
+  let s = {};
+  for (let i in n)
+    n.hasOwnProperty(i) && (s[i] = n[i].default);
+  for (let i in e)
+    (t.unsafeParams || e.hasOwnProperty(i) && t.params.hasOwnProperty(i)) && (t.renameParams.hasOwnProperty(i) ? (delete s[i], s[t.renameParams[i]] = e[i]) : s[i] = e[i], R(s[i]) && delete s[i]);
+  let o = t.url, a = F(t.environment), E = {};
+  a && a.url && (o = a.url + o, !R(a.auth) && !R(a.auth.user) && (E = a.auth));
+  let T = D(o, s, f.RESOURCE_PARAM_LEFT_SEPARATOR, f.RESOURCE_PARAM_RIGHT_SEPARATOR), u = U(o, s, f.RESOURCE_PARAM_LEFT_SEPARATOR, f.RESOURCE_PARAM_RIGHT_SEPARATOR);
+  if (s = y(s, T), r === "get" || r === "open") {
+    let i = x(s);
+    u = [u, i].join("?"), s = {};
   }
-  return r.join("&");
-};
-const prepareHTTPResourceOptions = (opts = {}) => {
-  return mergeObjects(CALL_HTTP_RESOURCE_OPTIONS, opts);
-};
-const getDefaultValidateStatus = (status, validStatuses = SUCCESS_STATUSES) => {
-  if (validStatuses.length === 0) {
-    return true;
-  }
-  return validStatuses.indexOf(status) !== -1;
-};
-const buildResource = (resource, args) => {
-  const p = cloneObject(resource.params);
-  const method = resource.method.toLowerCase();
-  let r = {};
-  for (let k in p) {
-    if (p.hasOwnProperty(k)) {
-      r[k] = p[k].default;
-    }
-  }
-  for (let key in args) {
-    if (resource.unsafeParams || key === resource.paginationVariable || args.hasOwnProperty(key) && resource.params.hasOwnProperty(key)) {
-      if (resource.renameParams.hasOwnProperty(key)) {
-        delete r[key];
-        r[resource.renameParams[key]] = args[key];
-      } else {
-        r[key] = args[key];
-      }
-      if (isUndefined(r[key])) {
-        delete r[key];
-      }
-    }
-  }
-  let url = resource.url;
-  let env = getHTTPEnvironment(resource.environment);
-  let auth = {};
-  if (env && env.url) {
-    url = env.url + url;
-    if (!isUndefined(env.auth) && !isUndefined(env.auth.user)) {
-      auth = env.auth;
-    }
-  }
-  let toDelete = extractFillData(url, r, resource.fillLeftSeparator, resource.fillRightSeparator);
-  let link = fill(url, r, resource.fillLeftSeparator, resource.fillRightSeparator);
-  r = deleteObjectKeys(r, toDelete);
-  if (method === "get" || method === "open") {
-    let stringParams = paramsToString(r);
-    link = [link, stringParams].join("?");
-    r = {};
-  }
-  let headers = void 0;
-  if (resource.isFileUpload) {
-    headers = {
+  let h;
+  if (t.isFileUpload) {
+    h = {
       "Content-Type": "multipart/form-data"
     };
-    let formData = new FormData();
-    for (let k in r) {
-      if (r.hasOwnProperty(k)) {
-        formData.append(k, r[k]);
-      }
-    }
-    r = formData;
+    let i = new FormData();
+    for (let m in s)
+      s.hasOwnProperty(m) && i.append(m, s[m]);
+    s = i;
   }
   return {
-    url: link,
-    method,
-    data: r,
-    auth,
-    validateStatus: (status) => getDefaultValidateStatus(status, resource.validStatuses),
-    headers
+    url: u,
+    method: r,
+    data: s,
+    auth: E,
+    validateStatus: (i) => G(i, t.validStatuses),
+    headers: h
   };
-};
-const callHTTPResource = function(resource, params = {}) {
-  const emptyResponse = (resolve, reject) => {
-    resolve(void 0);
+}, N = function(t, e = {}) {
+  const n = (s, o) => {
+    s(void 0);
   };
-  if (isUndefined(resource)) {
-    console.error("Invalid resource", resource);
-    return emptyPromise(emptyResponse);
+  if (R(t))
+    return console.error("Invalid resource", t), O(n);
+  if (t.isFetching)
+    return O(n);
+  let r = $(t, e);
+  if (r.method === "get" && t.cacheTime > 0 && !t.forceRefreshFlag && t.cache[r.url]) {
+    let s = A();
+    if (t.cache[r.url].moment + t.cacheTime - s > 0)
+      return O((a, E) => a((() => S(t.onSuccess) ? t.onSuccess(t.cache[r.url].r) : t.cache[r.url].r)()));
   }
-  if (resource.isFetching && !resource.enableMultipleCalling) {
-    return emptyPromise(emptyResponse);
-  }
-  let data = buildResource(resource, params);
-  if (data.method === "get" && resource.cacheTime > 0 && !resource.forceRefreshFlag && resource.cache[data.url]) {
-    let now = time();
-    let limit = resource.cache[data.url].moment + resource.cacheTime;
-    if (limit - now > 0) {
-      return emptyPromise((resolve, reject) => {
-        return resolve((() => {
-          if (isFunction(resource.success)) {
-            return resource.success(resource.cache[data.url].r);
-          }
-          return resource.cache[data.url].r;
-        })());
-      });
-    }
-  }
-  switch (data.method) {
+  switch (r.method) {
     case "get":
     case "post":
     case "put":
     case "delete":
-      resource.isFetching = true;
-      return axios(data).then((promise) => {
-        resource.isFetching = false;
-        if (data.method === "get" && resource.cacheTime > 0) {
-          resource.cache[data.url] = {
-            moment: time(),
-            r: promise
-          };
-          resource.forceRefreshFlag = false;
-        }
-        if (isFunction(resource.success)) {
-          return resource.success(promise);
-        }
-        return promise;
-      }).catch((error) => {
-        resource.isFetching = false;
-        return Promise.reject(new Error(error));
-      });
+      return t.isFetching = !0, g(r).then((s) => (t.isFetching = !1, r.method === "get" && t.cacheTime > 0 && (t.cache[r.url] = {
+        moment: A(),
+        r: s
+      }, t.forceRefreshFlag = !1), S(t.onSuccess) ? t.onSuccess(s) : s)).catch((s) => (t.isFetching = !1, Promise.reject(new Error(s))));
     case "download":
     case "open":
-      return axios.get(data.url, { "responseType": "blob" }).then((r) => {
-        let contentDisposition = r.headers["content-disposition"], fileName = "";
-        if (contentDisposition) {
-          contentDisposition = contentDisposition.split(";");
-          contentDisposition.forEach((z) => {
-            let y = z.split("=");
-            if (trim(y[0]) === "filename") {
-              let n = trim(y[1]);
-              n = trim(n, '"');
-              fileName = n;
-            }
-          });
-        }
-        window.download(r.data, fileName);
-        if (isFunction(resource.success)) {
-          return resource.success(r);
-        }
-        return r;
-      }).catch((error) => {
-        return error;
-      });
+      return g.get(r.url, { responseType: "blob" }).then((s) => {
+        let o = s.headers["content-disposition"], a = "";
+        return o && o.split(";").forEach((T) => {
+          let u = T.split("=");
+          if (P(u[0]) === "filename") {
+            let h = P(u[1]);
+            h = P(h, '"'), a = h;
+          }
+        }), window.download(s.data, a), S(t.onSuccess) ? t.onSuccess(s) : s;
+      }).catch((s) => s);
     default:
       console.warn("Error: Invalid method");
   }
 };
-class LktResource {
-  constructor(name, url, method) {
-    this.name = name;
-    this.url = url;
-    this.method = method;
-    this.currentPage = void 0;
-    this.isFetching = false;
-    this.inLastPage = false;
-    this.environment = void 0;
-    this.unsafeParams = false;
-    this.params = {};
-    this.renameParams = {};
-    this.fillLeftSeparator = "{";
-    this.fillRightSeparator = "}";
-    this.success = void 0;
-    this.validStatuses = SUCCESS_STATUSES;
-    this.searchParam = void 0;
-    this.processResults = void 0;
-    this.escapeMarkup = void 0;
-    this.templateResult = void 0;
-    this.templateSelection = void 0;
-    this.paginationVariable = "paged";
-    this.enableMultipleCalling = false;
-    this.isFileUpload = false;
-    this.lastPageChecker = () => {
-      return false;
-    };
-    this.dataType = "json";
-    this.cache = {};
-    this.cacheTime = 0;
-    this.escapeMarkup = void 0;
-    this.templateResult = void 0;
-    this.templateSelection = void 0;
-    this.isFileUpload = false;
-    this.cache = {};
-    this.cacheTime = void 0;
-    this.forceRefreshFlag = false;
+class J {
+  constructor(e, n, r = "get") {
+    this.method = "get", this.dataType = "json", this.currentPage = -1, this.params = {}, this.renameParams = {}, this.environment = "", this.isFetching = !1, this.isFileUpload = !1, this.forceRefreshFlag = !1, this.unsafeParams = !1, this.onSuccess = void 0, this.validStatuses = p, this.cacheTime = 0, this.cache = {}, this.name = e, this.url = n, this.method = r;
   }
-  setParam(property) {
-    this.params[property] = { type: void 0 };
-    return this;
+  setEnvironment(e) {
+    return this.environment = e, this;
   }
-  setSuccessStatuses(statuses = SUCCESS_STATUSES) {
-    this.validStatuses = statuses;
-    return this;
+  setDataTypeJSON() {
+    return this.dataType = "json", this;
   }
-  setForceRefresh(status = true) {
-    this.forceRefreshFlag = status;
-    return this;
+  enableUnsafeParams() {
+    return this.unsafeParams = !0, this;
   }
-  call(params = {}) {
-    return callHTTPResource(this, params);
+  setIsFileUpload(e = !0) {
+    return this.isFileUpload = e, this;
+  }
+  setParam(e) {
+    return this.params[e] = { type: void 0 }, this;
+  }
+  renameParam(e, n) {
+    return this.params[e] = n, this;
+  }
+  setSuccessStatuses(e = p) {
+    return this.validStatuses = e, this;
+  }
+  setForceRefresh(e = !0) {
+    return this.forceRefreshFlag = e, this;
+  }
+  setOnSuccess(e) {
+    return this.onSuccess = e, this;
+  }
+  call(e = {}) {
+    return N(this, e);
   }
 }
-class LktEnvironment {
-  constructor(name, url, auth) {
-    this.name = name;
-    this.url = url;
-    this.auth = auth;
+class q {
+  constructor(e, n, r) {
+    this.name = e, this.url = n, this.auth = r;
   }
 }
-const _LktRouter = class {
-  static addResource(resource) {
-    _LktRouter.RESOURCES[resource.name] = resource;
+const c = class {
+  static addResource(t) {
+    c.RESOURCES[t.name] = t;
   }
-  static addEnvironment(environment) {
-    if (isUndefined(_LktRouter.DEFAULT_ENVIRONMENT)) {
-      _LktRouter.DEFAULT_ENVIRONMENT = environment.name;
-    }
-    _LktRouter.ENVIRONMENTS[environment.name] = environment;
+  static addEnvironment(t) {
+    R(c.DEFAULT_ENVIRONMENT) && (c.DEFAULT_ENVIRONMENT = t.name), c.ENVIRONMENTS[t.name] = t;
   }
-  static getResource(name) {
-    if (isObject(_LktRouter.RESOURCES[name])) {
-      return _LktRouter.RESOURCES[name];
-    }
-    return void 0;
+  static getResource(t) {
+    if (_(c.RESOURCES[t]))
+      return c.RESOURCES[t];
   }
-  static getEnvironment(name) {
-    if (isObject(_LktRouter.ENVIRONMENTS[name])) {
-      return _LktRouter.ENVIRONMENTS[name];
-    }
-    return void 0;
+  static getEnvironment(t) {
+    if (_(c.ENVIRONMENTS[t]))
+      return c.ENVIRONMENTS[t];
   }
 };
-let LktRouter = _LktRouter;
-__publicField(LktRouter, "RESOURCES", []);
-__publicField(LktRouter, "ENVIRONMENTS", []);
-__publicField(LktRouter, "DEFAULT_ENVIRONMENT");
-const createHTTPResource = (name, path, method) => {
-  let r = new LktResource(name, path, method);
-  registerHTTPResource(r);
-  return getHTTPResource(name);
-};
-const createHTTPEnvironment = (name, url, auth) => {
-  let r = new LktEnvironment(name, url, auth);
-  registerHTTPEnvironment(r);
-  return getHTTPEnvironment(name);
-};
-const registerHTTPResource = (resource) => {
-  LktRouter.addResource(resource);
-};
-const registerHTTPEnvironment = (environment) => {
-  LktRouter.addEnvironment(environment);
-};
-const getHTTPResource = (resource) => {
-  return LktRouter.getResource(resource);
-};
-const getHTTPEnvironment = (environment) => {
-  return LktRouter.getEnvironment(environment);
-};
-const LktHttpMixin = {
+let l = c;
+l.RESOURCES = {};
+l.ENVIRONMENTS = {};
+l.DEFAULT_ENVIRONMENT = void 0;
+const Q = (t, e, n = "default") => d(t, e, L, n), X = (t, e, n = "default") => d(t, e, C, n), Y = (t, e, n = "default") => d(t, e, I, n), Z = (t, e, n = "default") => d(t, e, j, n), tt = (t, e, n = "default") => d(t, e, k, n), et = (t, e, n = "default") => d(t, e, b, n), d = (t, e, n = "get", r = "default") => {
+  let s = new J(t, e, n).setEnvironment(r);
+  return l.addResource(s), w(t);
+}, K = (t, e, n = {}) => {
+  let r = new q(t, e, n);
+  return l.addEnvironment(r), F(t);
+}, w = (t) => l.getResource(t), F = (t) => l.getEnvironment(t), W = {
   methods: {
-    "$http"(resourceName = "", params = {}, options = {}) {
-      const resource = getHTTPResource(resourceName);
-      options = prepareHTTPResourceOptions(options);
-      if (options.forceRefresh === true) {
-        resource.setForceRefresh(true);
-      }
-      return callHTTPResource(resource, params);
+    $http(t = "", e = {}, n = {}) {
+      const r = w(t);
+      return n = V(n), n.forceRefresh === !0 && r.setForceRefresh(!0), N(r, e);
     },
-    "$api"(resourceName = "", params = {}, options = {}) {
-      return this.$http(resourceName, params, options);
+    $api(t = "", e = {}, n = {}) {
+      return this.$http(t, e, n);
     }
   }
-};
-const LktHttp = {
-  install: (app, options) => {
-    app.mixin(LktHttpMixin);
+}, nt = {
+  install: (t, e) => {
+    t.mixin(W), K("default", ""), window.download = require("downloadjs");
   }
 };
 export {
-  createHTTPEnvironment,
-  createHTTPResource,
-  LktHttp as default
+  Z as createHTTPDeleteResource,
+  et as createHTTPDownloadResource,
+  K as createHTTPEnvironment,
+  Q as createHTTPGetResource,
+  tt as createHTTPOpenResource,
+  X as createHTTPPostResource,
+  Y as createHTTPPutResource,
+  nt as default
 };

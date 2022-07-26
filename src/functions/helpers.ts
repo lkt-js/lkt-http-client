@@ -1,7 +1,7 @@
-import {mergeObjects} from "lkt-tools";
+import {ILktObject, mergeObjects} from "lkt-tools";
 import {CALL_HTTP_RESOURCE_OPTIONS} from "../constants";
 
-export const paramsToString = (params) => {
+export const paramsToString = (params: ILktObject) => {
     let r = [];
     for (let key in params) {
         if (params.hasOwnProperty(key)) {
@@ -23,6 +23,6 @@ export const paramsToString = (params) => {
  * @param opts
  * @returns {*}
  */
-export const prepareHTTPResourceOptions = (opts = {}) => {
+export const prepareHTTPResourceOptions = (opts: ILktObject = {}) => {
     return mergeObjects(CALL_HTTP_RESOURCE_OPTIONS, opts);
 }
