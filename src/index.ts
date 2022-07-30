@@ -9,8 +9,12 @@ export {
     createHTTPDeleteResource,
     createHTTPDownloadResource,
     createHTTPOpenResource,
-    createHTTPEnvironment
+    createHTTPEnvironment,
+    getHTTPResource,
+    getHTTPEnvironment,
 } from "./functions/startup-functions";
+
+export {existsHTTPResource} from "./functions/helpers";
 
 const LktHttp = {
     install: (app: any, options: ILktObject) => {

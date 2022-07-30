@@ -1,5 +1,6 @@
-import {ILktObject, mergeObjects} from "lkt-tools";
+import {ILktObject, isUndefined, mergeObjects} from "lkt-tools";
 import {CALL_HTTP_RESOURCE_OPTIONS} from "../constants";
+import {getHTTPResource} from "./startup-functions";
 
 export const paramsToString = (params: ILktObject) => {
     let r = [];
@@ -25,4 +26,12 @@ export const paramsToString = (params: ILktObject) => {
  */
 export const prepareHTTPResourceOptions = (opts: ILktObject = {}) => {
     return mergeObjects(CALL_HTTP_RESOURCE_OPTIONS, opts);
+}
+
+/**
+ *
+ * @param name
+ */
+export const existsHTTPResource = (name: string): boolean => {
+    return !isUndefined(getHTTPResource(name));
 }

@@ -6,3 +6,8 @@ export declare const paramsToString: (params: ILktObject) => string;
  * @returns {*}
  */
 export declare const prepareHTTPResourceOptions: (opts?: ILktObject) => object;
+/**
+ *
+ * @param name
+ */
+export declare const existsHTTPResource: (name: string) => boolean;
