@@ -10,11 +10,12 @@ import {
 } from "lkt-tools";
 import {SUCCESS_STATUSES} from "../constants";
 import axios from "axios";
-import {paramsToString} from "./helpers";
-import {getHTTPEnvironment} from "./startup-functions";
+import {paramsToString, prepareHTTPResourceOptions} from "./helpers";
+import {getHTTPEnvironment, getHTTPResource} from "./startup-functions";
 import {Settings} from "../settings/Settings";
 import {LktResource} from "../classes/LktResource";
 import {IResourceBuild} from "../interfaces/IResourceBuild";
+import {IMixinOptions} from "../interfaces/IMixinOptions";
 
 /**
  *
@@ -200,4 +201,15 @@ export const callHTTPResource = function(resource: LktResource, params: ILktObje
         default:
             console.warn('Error: Invalid method');
     }
+};
+
+export const $http = (resourceName: string = '', params: ILktObject =  {}, options: IMixinOptions = {}) => {
+    const resource = getHTTPResource(resourceName);
+    options = prepareHTTPResourceOptions(options);
+
+    if (options.forceRefresh === true){
+        resource.setForceRefresh(true);
+    }
+
+    return callHTTPResource(resource, params);
 };

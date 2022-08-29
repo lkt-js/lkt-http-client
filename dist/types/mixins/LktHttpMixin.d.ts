@@ -17,6 +17,6 @@ export declare const LktHttpMixin: {
          * @param options
          * @returns {Promise<unknown>|Promise<*>|*}
          */
-        $api(resourceName?: string, params?: ILktObject, options?: IMixinOptions): any;
+        $api(resourceName?: string, params?: ILktObject, options?: IMixinOptions): Promise<any>;
     };
 };

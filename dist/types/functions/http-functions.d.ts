@@ -1,6 +1,7 @@
 import { ILktObject } from "lkt-tools";
 import { LktResource } from "../classes/LktResource";
 import { IResourceBuild } from "../interfaces/IResourceBuild";
+import { IMixinOptions } from "../interfaces/IMixinOptions";
 /**
  *
  * @param status
@@ -22,3 +23,4 @@ export declare const buildResource: (resource: LktResource, args: ILktObject) =>
  * @returns {Promise<unknown>|Promise<Result>|Promise<any>|Promise|Promise<AxiosResponse<any>>}
  */
 export declare const callHTTPResource: (resource: LktResource, params?: ILktObject) => Promise<any>;
+export declare const $http: (resourceName?: string, params?: ILktObject, options?: IMixinOptions) => Promise<any>;

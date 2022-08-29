@@ -14,6 +14,8 @@ export {
     getHTTPEnvironment,
 } from "./functions/startup-functions";
 
+export {$http} from "./functions/http-functions";
+
 export {existsHTTPResource} from "./functions/helpers";
 
 const LktHttp = {
