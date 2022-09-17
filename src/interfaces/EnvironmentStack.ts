@@ -1,5 +1,5 @@
 import {LktEnvironment} from "../classes/LktEnvironment";
 
-export interface IEnvironmentStack {
+export interface EnvironmentStack {
     [key: string]: LktEnvironment;
 }

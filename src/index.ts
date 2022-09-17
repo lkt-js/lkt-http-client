@@ -1,22 +1,21 @@
-import {LktHttpMixin} from "./mixins/LktHttpMixin";
 import {ILktObject} from "lkt-tools";
+
 import {createHTTPEnvironment} from "./functions/startup-functions";
-
-export {
-    createHTTPGetResource,
-    createHTTPPostResource,
-    createHTTPPutResource,
-    createHTTPDeleteResource,
-    createHTTPDownloadResource,
-    createHTTPOpenResource,
-    createHTTPEnvironment,
-    getHTTPResource,
-    getHTTPEnvironment,
-} from "./functions/startup-functions";
-
-export {$http} from "./functions/http-functions";
+import {LktHttpMixin} from "./mixins/LktHttpMixin";
 
 export {existsHTTPResource} from "./functions/helpers";
+export {$http} from "./functions/http-functions";
+export {
+    // createHTTPGetResource,
+    // createHTTPPostResource,
+    // createHTTPPutResource,
+    // createHTTPDeleteResource,
+    // createHTTPDownloadResource,
+    // createHTTPOpenResource,
+    createHTTPEnvironment,
+    getHTTPEnvironment,
+    getHTTPResource,
+} from "./functions/startup-functions";
 
 const LktHttp = {
     install: (app: any, options: ILktObject) => {

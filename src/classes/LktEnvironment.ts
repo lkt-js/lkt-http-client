@@ -1,14 +1,15 @@
-import {IAuth} from "../interfaces/IAuth";
+import { UserAuth } from '../types/UserAuth';
+import {ResourceNameValue} from "../value-objects/ResourceNameValue";
+import {ResourceUrlValue} from "../value-objects/ResourceUrlValue";
 
 export class LktEnvironment {
+  name: ResourceNameValue;
+  url: ResourceUrlValue;
+  auth: UserAuth;
 
-    name: string;
-    url: string;
-    auth: IAuth;
-
-    constructor (name: string, url: string, auth?: IAuth){
-        this.name = name;
-        this.url = url;
-        this.auth = auth;
-    }
+  constructor(name: string, url: string, auth?: UserAuth) {
+    this.name = new ResourceNameValue(name);
+    this.url = new ResourceUrlValue(url);
+    this.auth = auth;
+  }
 }

@@ -1,81 +1,167 @@
-import {SUCCESS_STATUSES} from "../constants";
-import {callHTTPResource} from "../functions/http-functions";
-import {ILktObject} from "lkt-tools";
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { extractFillData, fill } from 'lkt-string-tools';
+import { deleteObjectKeys, emptyPromise, trim } from 'lkt-tools';
+import { LktObject } from 'lkt-ts-interfaces';
+
+import { paramsToString } from '../functions/helpers';
+import { Settings } from '../settings/Settings';
+import { ResourceData } from '../types/ResourceData';
+import { DataTypeValue } from '../value-objects/DataTypeValue';
+import { EnvironmentValue } from '../value-objects/EnvironmentValue';
+import { IsFileUploadValue } from '../value-objects/IsFileUploadValue';
+import { ResourceFetchStatus } from '../value-objects/ResourceFetchStatus';
+import { ResourceMethodValue } from '../value-objects/ResourceMethodValue';
+import { ResourceNameValue } from '../value-objects/ResourceNameValue';
+import { ResourceParamsValue } from '../value-objects/ResourceParamsValue';
+import { ResourceUrlValue } from '../value-objects/ResourceUrlValue';
+import { ResponseSuccessHookValue } from '../value-objects/ResponseSuccessHookValue';
+import { ValidResponseStatuses } from '../value-objects/ValidResponseStatuses';
+import { ResourceBuild } from './ResourceBuild';
 
 export class LktResource {
+  private readonly data: ResourceData;
 
-    name: string;
-    url: string;
-    method: string = 'get';
-    dataType: string = 'json';
-    currentPage: number = -1;
-    params: ILktObject = {};
-    renameParams: ILktObject = {};
-    environment: string = '';
+  private url: ResourceUrlValue;
+  public name: ResourceNameValue;
+  private method: ResourceMethodValue;
+  private environment: EnvironmentValue;
+  private dataType: DataTypeValue;
+  private params: ResourceParamsValue;
+  private isFileUpload: IsFileUploadValue;
+  private validStatuses: ValidResponseStatuses;
+  private fetchStatus: ResourceFetchStatus;
+  private onSuccess: ResponseSuccessHookValue;
 
-    isFetching: boolean = false;
-    isFileUpload: boolean = false;
-    forceRefreshFlag: boolean = false;
-    unsafeParams: boolean = false;
+  constructor(data: ResourceData) {
+    this.data = data;
 
-    onSuccess: Function = undefined;
-    validStatuses: Array<number> = SUCCESS_STATUSES;
+    this.url = new ResourceUrlValue(data.url);
+    this.name = new ResourceNameValue(data.name);
+    this.method = new ResourceMethodValue(data.method);
+    this.environment = new EnvironmentValue(data.environment);
+    this.dataType = new DataTypeValue(data.dataType);
+    this.params = new ResourceParamsValue(data.params);
+    this.isFileUpload = new IsFileUploadValue(data.isFileUpload);
+    this.validStatuses = new ValidResponseStatuses(data.validStatuses);
+    this.fetchStatus = new ResourceFetchStatus();
+    this.onSuccess = new ResponseSuccessHookValue(data.onSuccess);
+  }
 
-    cacheTime: number = 0;
-    cache: ILktObject = {};
+  build(params: LktObject) {
+    let r: LktObject = this.params.prepareValues(
+      params,
+      this.isFileUpload.value
+    );
 
-    constructor(name: string, url: string, method: string = 'get') {
-        this.name = name;
-        this.url = url;
-        this.method = method;
+    const url = this.url.prepare(this.environment.getUrl());
+
+    const toDelete = extractFillData(
+      url,
+      r,
+      Settings.RESOURCE_PARAM_LEFT_SEPARATOR,
+      Settings.RESOURCE_PARAM_RIGHT_SEPARATOR
+    );
+    let link = fill(
+      url,
+      r,
+      Settings.RESOURCE_PARAM_LEFT_SEPARATOR,
+      Settings.RESOURCE_PARAM_RIGHT_SEPARATOR
+    );
+    r = deleteObjectKeys(r, toDelete);
+
+    if (this.method.hasUrlParams()) {
+      const stringParams = paramsToString(r);
+      link = [link, stringParams].join('?');
+      r = {};
     }
 
-    setEnvironment(env: string): this {
-        this.environment = env;
-        return this;
+    const statusValidator = (status: number) =>
+      this.validStatuses.includes(status);
+
+    let headers = undefined;
+    if (this.isFileUpload.value) {
+      headers = {
+        'Content-Type': 'multipart/form-data',
+      };
     }
 
-    setDataTypeJSON(): this {
-        this.dataType = 'json';
-        return this;
+    return new ResourceBuild(
+      link,
+      this.method.toPrimitive(),
+      r,
+      this.environment.getAuth(),
+      statusValidator,
+      headers
+    );
+  }
+
+  call(params: LktObject): Promise<any> {
+    const build = this.build(params);
+
+    const emptyResponse = (resolve: any, reject: any) => {
+      resolve(undefined);
+    };
+
+    if (this.fetchStatus.inProgress()) {
+      return emptyPromise(emptyResponse);
     }
 
-    enableUnsafeParams(): this {
-        this.unsafeParams = true;
-        return this;
-    }
+    switch (build.method) {
+      case 'get':
+      case 'post':
+      case 'put':
+      case 'delete':
+        this.fetchStatus.start();
 
-    setIsFileUpload(status: boolean = true): this {
-        this.isFileUpload = status;
-        return this;
-    }
+        return axios(build as unknown as AxiosRequestConfig)
+          .then((promise: AxiosResponse) => {
+            this.fetchStatus.stop();
 
-    setParam(property: string): this {
-        this.params[property] = {type: undefined};
-        return this;
-    }
+            if (this.onSuccess.hasActionDefined()) {
+              return this.onSuccess.run(promise);
+            }
+            return promise;
+          })
+          .catch((error) => {
+            this.fetchStatus.stop();
+            return Promise.reject(new Error(error));
+          });
 
-    renameParam(param: string, rename: string): this {
-        this.params[param] = rename;
-        return this;
-    }
+      case 'download':
+      case 'open':
+        return axios
+          .get(build.url, { responseType: 'blob' })
+          .then((r) => {
+            const contentDisposition = r.headers['content-disposition'];
+            let fileName = '';
+            if (contentDisposition) {
+              const contentDispositionAux = contentDisposition.split(';');
+              contentDispositionAux.forEach((z) => {
+                const y = z.split('=');
+                if (trim(y[0]) === 'filename') {
+                  let n = trim(y[1]);
+                  n = trim(n, '"');
+                  fileName = n;
+                }
+              });
+            }
 
-    setSuccessStatuses(statuses: number[] = SUCCESS_STATUSES): this {
-        this.validStatuses = statuses;
-        return this;
-    }
+            //@ts-ignore
+            window.download(r.data, fileName);
 
-    setForceRefresh(status: boolean = true): this {
-        this.forceRefreshFlag = status;
-        return this;
-    }
+            if (this.onSuccess.hasActionDefined()) {
+              return this.onSuccess.run(r);
+            }
+            return r;
+          })
+          .catch((error) => {
+            return error;
+          });
 
-    setOnSuccess(fn: Function): this {
-        this.onSuccess = fn;
-        return this;
+      default:
+        throw new Error(
+          `Error: Invalid method in call ${JSON.stringify(build)}`
+        );
     }
-
-    call(params: ILktObject = {}) {
-        return callHTTPResource(this, params);
-    }
+  }
 }

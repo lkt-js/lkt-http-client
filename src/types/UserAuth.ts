@@ -1,4 +1,4 @@
-export interface IAuth {
+export type UserAuth = {
     user?: string,
     password?: string,
 }

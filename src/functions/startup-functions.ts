@@ -1,56 +1,64 @@
-import {LktResource} from "../classes/LktResource";
-import {LktEnvironment} from "../classes/LktEnvironment";
-import {LktRouter} from "../classes/LktRouter";
-import {IAuth} from "../interfaces/IAuth";
-import {METHOD_DELETE, METHOD_DOWNLOAD, METHOD_GET, METHOD_OPEN, METHOD_POST, METHOD_PUT} from "../constants";
+import { LktEnvironment } from '../classes/LktEnvironment';
+import { LktResource } from '../classes/LktResource';
+import { LktRouter } from '../classes/LktRouter';
+import {EnvironmentData} from "../types/EnvironmentData";
+// import {
+//   METHOD_DELETE,
+//   METHOD_DOWNLOAD,
+//   METHOD_GET,
+//   METHOD_OPEN,
+//   METHOD_POST,
+//   METHOD_PUT,
+// } from '../constants';
+import {ResourceData} from "../types/ResourceData";
+import { UserAuth } from '../types/UserAuth';
 
-export const createHTTPGetResource = (name: string, path: string, env: string = 'default') => {
-    return createHTTPResource(name, path, METHOD_GET, env);
-}
-
-export const createHTTPPostResource = (name: string, path: string, env: string = 'default') => {
-    return createHTTPResource(name, path, METHOD_POST, env);
-}
-
-export const createHTTPPutResource = (name: string, path: string, env: string = 'default') => {
-    return createHTTPResource(name, path, METHOD_PUT, env);
-}
-
-export const createHTTPDeleteResource = (name: string, path: string, env: string = 'default') => {
-    return createHTTPResource(name, path, METHOD_DELETE, env);
-}
-
-export const createHTTPOpenResource = (name: string, path: string, env: string = 'default') => {
-    return createHTTPResource(name, path, METHOD_OPEN, env);
-}
-
-export const createHTTPDownloadResource = (name: string, path: string, env: string = 'default') => {
-    return createHTTPResource(name, path, METHOD_DOWNLOAD, env);
-}
+// export const createHTTPGetResource = (
+//   name: string,
+//   path: string,
+//   env: string = 'default'
+// ) => {
+//   return createHTTPResource(name, path, METHOD_GET, env);
+// };
+//
+// export const createHTTPPostResource = (name: string, path: string, env: string = 'default') => {
+//     return createHTTPResource(name, path, METHOD_POST, env);
+// }
+//
+// export const createHTTPPutResource = (name: string, path: string, env: string = 'default') => {
+//     return createHTTPResource(name, path, METHOD_PUT, env);
+// }
+//
+// export const createHTTPDeleteResource = (name: string, path: string, env: string = 'default') => {
+//     return createHTTPResource(name, path, METHOD_DELETE, env);
+// }
+//
+// export const createHTTPOpenResource = (name: string, path: string, env: string = 'default') => {
+//     return createHTTPResource(name, path, METHOD_OPEN, env);
+// }
+//
+// export const createHTTPDownloadResource = (name: string, path: string, env: string = 'default') => {
+//     return createHTTPResource(name, path, METHOD_DOWNLOAD, env);
+// }
 
 /**
  *
- * @param name
- * @param path
- * @param method
- * @param env
+ * @param data
  */
-export const createHTTPResource = (name: string, path: string, method: string = 'get', env: string = 'default'): LktResource => {
-    let r = new LktResource(name, path, method).setEnvironment(env);
+export const createHTTPResource = (data: ResourceData): LktResource => {
+    const r = new LktResource(data);
     LktRouter.addResource(r);
-    return getHTTPResource(name);
+    return getHTTPResource(data.name);
 }
 
 /**
  *
- * @param name
- * @param url
- * @param auth
+ * @param data
  */
-export const createHTTPEnvironment = (name: string, url: string, auth: IAuth = {}): LktEnvironment => {
-    let r = new LktEnvironment(name, url, auth);
+export const createHTTPEnvironment = (data: EnvironmentData): LktEnvironment => {
+    const r = new LktEnvironment(data.name, data.url, data.auth);
     LktRouter.addEnvironment(r);
-    return getHTTPEnvironment(name);
+    return getHTTPEnvironment(data.name);
 }
 
 /**
