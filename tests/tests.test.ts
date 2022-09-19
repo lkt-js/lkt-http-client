@@ -1,14 +1,17 @@
+import {
+  createHTTPEnvironment,
+  createHTTPGetResource,
+  createHTTPPutResource,
+} from '../src';
 import { LktResource } from '../src/classes/LktResource';
 import { ResourceBuild } from '../src/classes/ResourceBuild';
-import {createHTTPEnvironment, createHTTPResource} from '../src/functions/startup-functions';
-import {EnvironmentData} from "../src/types/EnvironmentData";
+import { EnvironmentData } from '../src/types/EnvironmentData';
 import { ResourceData } from '../src/types/ResourceData';
 
 test('create a resource', () => {
   const resourceData: ResourceData = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
-    method: 'put',
     params: {
       id: { default: undefined },
       name: { default: undefined },
@@ -17,7 +20,7 @@ test('create a resource', () => {
     },
   };
 
-  const resource = createHTTPResource(resourceData);
+  const resource = createHTTPPutResource(resourceData);
 
   expect(resource).toBeInstanceOf(LktResource);
 
@@ -33,7 +36,6 @@ test('create a resource get', () => {
   const resourceData: ResourceData = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
-    method: 'get',
     params: {
       id: { default: undefined },
       name: { default: undefined },
@@ -42,7 +44,7 @@ test('create a resource get', () => {
     },
   };
 
-  const resource = createHTTPResource(resourceData);
+  const resource = createHTTPGetResource(resourceData);
 
   expect(resource).toBeInstanceOf(LktResource);
 
@@ -66,7 +68,6 @@ test('call a resource get with custom environment', () => {
   const resourceData: ResourceData = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
-    method: 'get',
     params: {
       id: { default: undefined },
       name: { default: undefined },
@@ -76,7 +77,7 @@ test('call a resource get with custom environment', () => {
     environment: 'default'
   };
 
-  const resource = createHTTPResource(resourceData);
+  const resource = createHTTPGetResource(resourceData);
 
   expect(resource).toBeInstanceOf(LktResource);
 

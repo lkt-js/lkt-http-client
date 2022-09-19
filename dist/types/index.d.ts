@@ -1,8 +1,8 @@
-import { ILktObject } from "lkt-tools";
-export { createHTTPGetResource, createHTTPPostResource, createHTTPPutResource, createHTTPDeleteResource, createHTTPDownloadResource, createHTTPOpenResource, createHTTPEnvironment, getHTTPResource, getHTTPEnvironment, } from "./functions/startup-functions";
-export { $http } from "./functions/http-functions";
-export { existsHTTPResource } from "./functions/helpers";
+import { LktObject } from 'lkt-ts-interfaces';
+export { existsHTTPResource } from './functions/helpers';
+export { httpCall } from "./functions/http-functions";
+export { createHTTPDeleteResource, createHTTPDownloadResource, createHTTPEnvironment, createHTTPGetResource, createHTTPOpenResource, createHTTPPostResource, createHTTPPutResource, getHTTPEnvironment, getHTTPResource, } from "./functions/startup-functions";
 declare const LktHttp: {
-    install: (app: any, options: ILktObject) => void;
+    install: (app: any, options: LktObject) => void;
 };
 export default LktHttp;

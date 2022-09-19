@@ -1,26 +1,24 @@
-import {ILktObject} from "lkt-tools";
+import { LktObject } from 'lkt-ts-interfaces';
 
-import {createHTTPEnvironment} from "./functions/startup-functions";
-import {LktHttpMixin} from "./mixins/LktHttpMixin";
+import { createHTTPEnvironment } from './functions/startup-functions';
 
-export {existsHTTPResource} from "./functions/helpers";
-export {$http} from "./functions/http-functions";
+export { existsHTTPResource } from './functions/helpers';
+export {httpCall} from "./functions/http-functions";
 export {
-    // createHTTPGetResource,
-    // createHTTPPostResource,
-    // createHTTPPutResource,
-    // createHTTPDeleteResource,
-    // createHTTPDownloadResource,
-    // createHTTPOpenResource,
+    createHTTPDeleteResource,
+    createHTTPDownloadResource,
     createHTTPEnvironment,
+    createHTTPGetResource,
+    createHTTPOpenResource,
+    createHTTPPostResource,
+    createHTTPPutResource,
     getHTTPEnvironment,
     getHTTPResource,
 } from "./functions/startup-functions";
 
 const LktHttp = {
-    install: (app: any, options: ILktObject) => {
-        app.mixin(LktHttpMixin);
-        createHTTPEnvironment('default', '');
+    install: (app: any, options: LktObject) => {
+        createHTTPEnvironment({name: 'default', url: ''});
         //@ts-ignore
         window.download = require("downloadjs");
     },

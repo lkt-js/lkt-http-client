@@ -1,7 +1,9 @@
-import { IAuth } from "../interfaces/IAuth";
+import { UserAuth } from '../types/UserAuth';
+import { EnvironmentUrlValue } from '../value-objects/EnvironmentUrlValue';
+import { ResourceNameValue } from '../value-objects/ResourceNameValue';
 export declare class LktEnvironment {
-    name: string;
-    url: string;
-    auth: IAuth;
-    constructor(name: string, url: string, auth?: IAuth);
+    name: ResourceNameValue;
+    url: EnvironmentUrlValue;
+    auth: UserAuth;
+    constructor(name: string, url: string, auth?: UserAuth);
 }

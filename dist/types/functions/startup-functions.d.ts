@@ -1,27 +1,23 @@
-import { LktResource } from "../classes/LktResource";
-import { LktEnvironment } from "../classes/LktEnvironment";
-import { IAuth } from "../interfaces/IAuth";
-export declare const createHTTPGetResource: (name: string, path: string, env?: string) => LktResource;
-export declare const createHTTPPostResource: (name: string, path: string, env?: string) => LktResource;
-export declare const createHTTPPutResource: (name: string, path: string, env?: string) => LktResource;
-export declare const createHTTPDeleteResource: (name: string, path: string, env?: string) => LktResource;
-export declare const createHTTPOpenResource: (name: string, path: string, env?: string) => LktResource;
-export declare const createHTTPDownloadResource: (name: string, path: string, env?: string) => LktResource;
+import { LktEnvironment } from '../classes/LktEnvironment';
+import { LktResource } from '../classes/LktResource';
+import { EnvironmentData } from '../types/EnvironmentData';
+import { ResourceData } from '../types/ResourceData';
+export declare const createHTTPGetResource: (data: ResourceData) => LktResource;
+export declare const createHTTPPostResource: (data: ResourceData) => LktResource;
+export declare const createHTTPPutResource: (data: ResourceData) => LktResource;
+export declare const createHTTPDeleteResource: (data: ResourceData) => LktResource;
+export declare const createHTTPOpenResource: (data: ResourceData) => LktResource;
+export declare const createHTTPDownloadResource: (data: ResourceData) => LktResource;
 /**
  *
- * @param name
- * @param path
- * @param method
- * @param env
+ * @param data
  */
-export declare const createHTTPResource: (name: string, path: string, method?: string, env?: string) => LktResource;
+export declare const createHTTPResource: (data: ResourceData) => LktResource;
 /**
  *
- * @param name
- * @param url
- * @param auth
+ * @param data
  */
-export declare const createHTTPEnvironment: (name: string, url: string, auth?: IAuth) => LktEnvironment;
+export declare const createHTTPEnvironment: (data: EnvironmentData) => LktEnvironment;
 /**
  *
  * @param resource

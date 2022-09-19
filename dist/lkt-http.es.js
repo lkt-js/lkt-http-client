@@ -1,182 +1,293 @@
-import { isUndefined as R, isObject as _, mergeObjects as v, emptyPromise as O, time as g, isFunction as S, trim as P, cloneObject as D, extractFillData as U, fill as y, deleteObjectKeys as M } from "lkt-tools";
-import N from "axios";
-const p = [200, 201, 202], L = {
-  forceRefresh: !1
-}, C = "get", I = "post", j = "put", k = "delete", x = "open", b = "download";
-class V {
-  constructor(e, n, r = "get") {
-    this.method = "get", this.dataType = "json", this.currentPage = -1, this.params = {}, this.renameParams = {}, this.environment = "", this.isFetching = !1, this.isFileUpload = !1, this.forceRefreshFlag = !1, this.unsafeParams = !1, this.onSuccess = void 0, this.validStatuses = p, this.cacheTime = 0, this.cache = {}, this.name = e, this.url = n, this.method = r;
-  }
-  setEnvironment(e) {
-    return this.environment = e, this;
-  }
-  setDataTypeJSON() {
-    return this.dataType = "json", this;
-  }
-  enableUnsafeParams() {
-    return this.unsafeParams = !0, this;
-  }
-  setIsFileUpload(e = !0) {
-    return this.isFileUpload = e, this;
-  }
-  setParam(e) {
-    return this.params[e] = { type: void 0 }, this;
-  }
-  renameParam(e, n) {
-    return this.params[e] = n, this;
-  }
-  setSuccessStatuses(e = p) {
-    return this.validStatuses = e, this;
-  }
-  setForceRefresh(e = !0) {
-    return this.forceRefreshFlag = e, this;
-  }
-  setOnSuccess(e) {
-    return this.onSuccess = e, this;
-  }
-  call(e = {}) {
-    return F(this, e);
+import P from "axios";
+import { emptyPromise as g } from "lkt-control-tools";
+import { deleteObjectProperties as N } from "lkt-object-tools";
+import { extractFillData as U, fill as V, trim as E } from "lkt-string-tools";
+class y {
+  constructor(t) {
+    t || (t = ""), this.value = t;
   }
 }
-class G {
-  constructor(e, n, r) {
-    this.name = e, this.url = n, this.auth = r;
+class w {
+  constructor(t) {
+    if (t === "")
+      throw new Error("A resource must have a valid name");
+    this.value = t;
   }
 }
-const c = class {
-  static addResource(t) {
-    c.RESOURCES[t.name] = t;
+class _ {
+  constructor(t, s, n) {
+    this.name = new w(t), this.url = new y(s), this.auth = n;
   }
-  static addEnvironment(t) {
-    R(c.DEFAULT_ENVIRONMENT) && (c.DEFAULT_ENVIRONMENT = t.name), c.ENVIRONMENTS[t.name] = t;
+}
+const i = class {
+  static addResource(e) {
+    i.RESOURCES[e.name.value] = e;
   }
-  static getResource(t) {
-    if (_(c.RESOURCES[t]))
-      return c.RESOURCES[t];
+  static addEnvironment(e) {
+    typeof i.DEFAULT_ENVIRONMENT > "u" && (i.DEFAULT_ENVIRONMENT = e.name.value), i.ENVIRONMENTS[e.name.value] = e;
   }
-  static getEnvironment(t) {
-    if (_(c.ENVIRONMENTS[t]))
-      return c.ENVIRONMENTS[t];
+  static getEnvironment(e) {
+    if (i.ENVIRONMENTS[e] instanceof _)
+      return i.ENVIRONMENTS[e];
   }
 };
-let l = c;
-l.RESOURCES = {};
-l.ENVIRONMENTS = {};
-l.DEFAULT_ENVIRONMENT = void 0;
-const X = (t, e, n = "default") => d(t, e, C, n), Y = (t, e, n = "default") => d(t, e, I, n), Z = (t, e, n = "default") => d(t, e, j, n), tt = (t, e, n = "default") => d(t, e, k, n), et = (t, e, n = "default") => d(t, e, x, n), nt = (t, e, n = "default") => d(t, e, b, n), d = (t, e, n = "get", r = "default") => {
-  let s = new V(t, e, n).setEnvironment(r);
-  return l.addResource(s), A(t);
-}, $ = (t, e, n = {}) => {
-  let r = new G(t, e, n);
-  return l.addEnvironment(r), w(t);
-}, A = (t) => l.getResource(t), w = (t) => l.getEnvironment(t), J = (t) => {
-  let e = [];
-  for (let n in t)
-    t.hasOwnProperty(n) && (Array.isArray(t[n]) ? t[n].length > 0 && e.push(n + "=" + JSON.stringify(t[n])) : e.push(n + "=" + t[n]));
-  return e.join("&");
-}, q = (t = {}) => v(L, t), st = (t) => !R(A(t));
-class f {
+let u = i;
+u.RESOURCES = {};
+u.ENVIRONMENTS = {};
+u.DEFAULT_ENVIRONMENT = void 0;
+u.getResource = (e) => {
+  if (i.RESOURCES[e] instanceof v)
+    return i.RESOURCES[e];
+};
+u.existsResource = (e) => i.RESOURCES[e] instanceof v;
+const D = (e) => {
+  const t = [];
+  return Object.keys(e).forEach((n) => {
+    Array.isArray(e[n]) ? e[n].length > 0 && t.push(`${n}=${JSON.stringify(e[n])}`) : t.push(`${n}=${e[n]}`);
+  }), t.join("&");
+}, Z = (e) => u.existsResource(e);
+class l {
 }
-f.RESOURCE_PARAM_LEFT_SEPARATOR = "{";
-f.RESOURCE_PARAM_RIGHT_SEPARATOR = "}";
-const K = (t, e = p) => e.length === 0 ? !0 : e.indexOf(t) !== -1, W = (t, e) => {
-  const n = D(t.params), r = t.method.toLowerCase();
-  let s = {};
-  for (let i in n)
-    n.hasOwnProperty(i) && (s[i] = n[i].default);
-  for (let i in e)
-    (t.unsafeParams || e.hasOwnProperty(i) && t.params.hasOwnProperty(i)) && (t.renameParams.hasOwnProperty(i) ? (delete s[i], s[t.renameParams[i]] = e[i]) : s[i] = e[i], R(s[i]) && delete s[i]);
-  let o = t.url, a = w(t.environment), E = {};
-  a && a.url && (o = a.url + o, !R(a.auth) && !R(a.auth.user) && (E = a.auth));
-  let T = U(o, s, f.RESOURCE_PARAM_LEFT_SEPARATOR, f.RESOURCE_PARAM_RIGHT_SEPARATOR), u = y(o, s, f.RESOURCE_PARAM_LEFT_SEPARATOR, f.RESOURCE_PARAM_RIGHT_SEPARATOR);
-  if (s = M(s, T), r === "get" || r === "open") {
-    let i = J(s);
-    u = [u, i].join("?"), s = {};
+l.RESOURCE_PARAM_LEFT_SEPARATOR = "{";
+l.RESOURCE_PARAM_RIGHT_SEPARATOR = "}";
+class H {
+  constructor(t) {
+    t || (t = "json"), this.value = t;
   }
-  let h;
-  if (t.isFileUpload) {
-    h = {
+  isJSON() {
+    return this.value === "json";
+  }
+}
+class j {
+  constructor(t) {
+    t || (t = "default"), this.value = t;
+  }
+  getUrl() {
+    const t = m(this.value);
+    return t ? t.url.value : "";
+  }
+  getAuth() {
+    const t = m(this.value);
+    return t && t.auth ? t.auth : {};
+  }
+}
+class b {
+  constructor(t) {
+    t || (t = !1), this.value = t;
+  }
+}
+class x {
+  constructor(t = !1) {
+    this.value = t;
+  }
+  inProgress() {
+    return this.value;
+  }
+  start() {
+    this.value = !0;
+  }
+  stop() {
+    this.value = !1;
+  }
+}
+class C {
+  constructor(t) {
+    t || (t = "get"), this.value = t;
+  }
+  toPrimitive() {
+    return this.value.toLowerCase();
+  }
+  isGET() {
+    return this.value === "get";
+  }
+  isPOST() {
+    return this.value === "post";
+  }
+  isPUT() {
+    return this.value === "put";
+  }
+  isDELETE() {
+    return this.value === "delete";
+  }
+  isOPEN() {
+    return this.value === "open";
+  }
+  isDOWNLOAD() {
+    return this.value === "download";
+  }
+  hasUrlParams() {
+    return this.isGET() || this.isOPEN();
+  }
+}
+class I {
+  constructor(t) {
+    t || (t = {}), this.value = t;
+  }
+  getDefaultValues() {
+    Object.keys(this.value).forEach((s) => {
+      this.value[s].default && this.value[s].default;
+    });
+  }
+  prepareValues(t, s = !1) {
+    t || (t = {});
+    const n = Object.keys(this.value), r = s ? new window.FormData() : {};
+    return n.forEach((o) => {
+      t[o] && (s ? r.append(o, t[o]) : r[o] = t[o]);
+    }), r;
+  }
+}
+class L {
+  constructor(t) {
+    if (t === "")
+      throw new Error("A resource must have a valid url");
+    this.value = t;
+  }
+  prepare(t) {
+    return t ? `${t}${this.value}` : this.value;
+  }
+}
+class M {
+  constructor(t) {
+    typeof t != "function" && (t = void 0), this.value = t;
+  }
+  hasActionDefined() {
+    return typeof this.value == "function";
+  }
+  run(t) {
+    return this.value(t);
+  }
+}
+class F {
+  constructor(t) {
+    t || (t = [200, 201, 202]), this.value = t;
+  }
+  includes(t) {
+    return this.value.includes(t);
+  }
+}
+class $ {
+  constructor(t, s, n, r, o, c) {
+    this.url = t, this.method = s, this.data = n, this.auth = r, this.statusValidator = o, this.headers = c;
+  }
+}
+class v {
+  constructor(t) {
+    this.data = t, this.url = new L(t.url), this.name = new w(t.name), this.method = new C(t.method), this.environment = new j(t.environment), this.dataType = new H(t.dataType), this.params = new I(t.params), this.isFileUpload = new b(t.isFileUpload), this.validStatuses = new F(t.validStatuses), this.fetchStatus = new x(), this.onSuccess = new M(t.onSuccess);
+  }
+  build(t) {
+    let s = this.params.prepareValues(
+      t,
+      this.isFileUpload.value
+    );
+    const n = this.url.prepare(this.environment.getUrl()), r = U(
+      n,
+      s,
+      l.RESOURCE_PARAM_LEFT_SEPARATOR,
+      l.RESOURCE_PARAM_RIGHT_SEPARATOR
+    );
+    let o = V(
+      n,
+      s,
+      l.RESOURCE_PARAM_LEFT_SEPARATOR,
+      l.RESOURCE_PARAM_RIGHT_SEPARATOR
+    );
+    if (s = N(s, r), this.method.hasUrlParams()) {
+      const a = D(s);
+      a.length > 0 && (o = [o, a].join("?")), s = {};
+    }
+    const c = (a) => this.validStatuses.includes(a);
+    let p;
+    return this.isFileUpload.value && (p = {
       "Content-Type": "multipart/form-data"
+    }), new $(
+      o,
+      this.method.toPrimitive(),
+      s,
+      this.environment.getAuth(),
+      c,
+      p
+    );
+  }
+  call(t) {
+    const s = this.build(t), n = (r, o) => {
+      r(void 0);
     };
-    let i = new FormData();
-    for (let m in s)
-      s.hasOwnProperty(m) && i.append(m, s[m]);
-    s = i;
-  }
-  return {
-    url: u,
-    method: r,
-    data: s,
-    auth: E,
-    validateStatus: (i) => K(i, t.validStatuses),
-    headers: h
-  };
-}, F = function(t, e = {}) {
-  const n = (s, o) => {
-    s(void 0);
-  };
-  if (R(t))
-    return console.error("Invalid resource", t), O(n);
-  if (t.isFetching)
-    return O(n);
-  let r = W(t, e);
-  if (r.method === "get" && t.cacheTime > 0 && !t.forceRefreshFlag && t.cache[r.url]) {
-    let s = g();
-    if (t.cache[r.url].moment + t.cacheTime - s > 0)
-      return O((a, E) => a((() => S(t.onSuccess) ? t.onSuccess(t.cache[r.url].r) : t.cache[r.url].r)()));
-  }
-  switch (r.method) {
-    case "get":
-    case "post":
-    case "put":
-    case "delete":
-      return t.isFetching = !0, N(r).then((s) => (t.isFetching = !1, r.method === "get" && t.cacheTime > 0 && (t.cache[r.url] = {
-        moment: g(),
-        r: s
-      }, t.forceRefreshFlag = !1), S(t.onSuccess) ? t.onSuccess(s) : s)).catch((s) => (t.isFetching = !1, Promise.reject(new Error(s))));
-    case "download":
-    case "open":
-      return N.get(r.url, { responseType: "blob" }).then((s) => {
-        let o = s.headers["content-disposition"], a = "";
-        return o && o.split(";").forEach((T) => {
-          let u = T.split("=");
-          if (P(u[0]) === "filename") {
-            let h = P(u[1]);
-            h = P(h, '"'), a = h;
-          }
-        }), window.download(s.data, a), S(t.onSuccess) ? t.onSuccess(s) : s;
-      }).catch((s) => s);
-    default:
-      console.warn("Error: Invalid method");
-  }
-}, H = (t = "", e = {}, n = {}) => {
-  const r = A(t);
-  return n = q(n), n.forceRefresh === !0 && r.setForceRefresh(!0), F(r, e);
-}, z = {
-  methods: {
-    $http(t = "", e = {}, n = {}) {
-      return H(t, e, n);
-    },
-    $api(t = "", e = {}, n = {}) {
-      return H(t, e, n);
+    if (this.fetchStatus.inProgress())
+      return g(n);
+    switch (s.method) {
+      case "get":
+      case "post":
+      case "put":
+      case "delete":
+        return this.fetchStatus.start(), P(s).then((r) => (this.fetchStatus.stop(), this.onSuccess.hasActionDefined() ? this.onSuccess.run(r) : r)).catch((r) => (this.fetchStatus.stop(), Promise.reject(new Error(r))));
+      case "download":
+      case "open":
+        return P.get(s.url, { responseType: "blob" }).then((r) => {
+          const o = r.headers["content-disposition"];
+          let c = "";
+          return o && o.split(";").forEach((a) => {
+            const T = a.split("=");
+            if (E(T[0]) === "filename") {
+              let R = E(T[1]);
+              R = E(R, '"'), c = R;
+            }
+          }), window.download(r.data, c), this.onSuccess.hasActionDefined() ? this.onSuccess.run(r) : r;
+        }).catch((r) => r);
+      default:
+        throw new Error(
+          `Error: Invalid method in call ${JSON.stringify(s)}`
+        );
     }
   }
-}, rt = {
-  install: (t, e) => {
-    t.mixin(z), $("default", ""), window.download = require("downloadjs");
+}
+var G = Object.defineProperty, k = Object.defineProperties, J = Object.getOwnPropertyDescriptors, S = Object.getOwnPropertySymbols, q = Object.prototype.hasOwnProperty, B = Object.prototype.propertyIsEnumerable, O = (e, t, s) => t in e ? G(e, t, { enumerable: !0, configurable: !0, writable: !0, value: s }) : e[t] = s, h = (e, t) => {
+  for (var s in t || (t = {}))
+    q.call(t, s) && O(e, s, t[s]);
+  if (S)
+    for (var s of S(t))
+      B.call(t, s) && O(e, s, t[s]);
+  return e;
+}, d = (e, t) => k(e, J(t));
+const z = (e) => {
+  const t = d(h({}, e), { method: "get" });
+  return f(t);
+}, tt = (e) => {
+  const t = d(h({}, e), { method: "post" });
+  return f(t);
+}, et = (e) => {
+  const t = d(h({}, e), { method: "put" });
+  return f(t);
+}, st = (e) => {
+  const t = d(h({}, e), { method: "delete" });
+  return f(t);
+}, rt = (e) => {
+  const t = d(h({}, e), { method: "open" });
+  return f(t);
+}, nt = (e) => {
+  const t = d(h({}, e), { method: "download" });
+  return f(t);
+}, f = (e) => {
+  const t = new v(e);
+  return u.addResource(t), A(e.name);
+}, W = (e) => {
+  const t = new _(e.name, e.url, e.auth);
+  return u.addEnvironment(t), m(e.name);
+}, A = (e) => u.getResource(e), m = (e) => u.getEnvironment(e), ot = (e = "", t = {}) => A(e).call(t), it = {
+  install: (e, t) => {
+    W({ name: "default", url: "" }), window.download = require("downloadjs");
   }
 };
 export {
-  H as $http,
-  tt as createHTTPDeleteResource,
+  st as createHTTPDeleteResource,
   nt as createHTTPDownloadResource,
-  $ as createHTTPEnvironment,
-  X as createHTTPGetResource,
-  et as createHTTPOpenResource,
-  Y as createHTTPPostResource,
-  Z as createHTTPPutResource,
-  rt as default,
-  st as existsHTTPResource,
-  w as getHTTPEnvironment,
-  A as getHTTPResource
+  W as createHTTPEnvironment,
+  z as createHTTPGetResource,
+  rt as createHTTPOpenResource,
+  tt as createHTTPPostResource,
+  et as createHTTPPutResource,
+  it as default,
+  Z as existsHTTPResource,
+  m as getHTTPEnvironment,
+  A as getHTTPResource,
+  ot as httpCall
 };

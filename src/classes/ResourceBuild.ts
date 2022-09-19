@@ -1,6 +1,6 @@
 import { LktObject } from 'lkt-ts-interfaces';
 
-import {ResourceMethod} from "../types/ResourceMethod";
+import { ResourceMethod } from '../types/ResourceMethod';
 import { StatusValidator } from '../types/StatusValidator';
 import { UserAuth } from '../types/UserAuth';
 

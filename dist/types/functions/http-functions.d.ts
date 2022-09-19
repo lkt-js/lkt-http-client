@@ -1,26 +1,2 @@
-import { ILktObject } from "lkt-tools";
-import { LktResource } from "../classes/LktResource";
-import { IResourceBuild } from "../interfaces/IResourceBuild";
-import { IMixinOptions } from "../interfaces/IMixinOptions";
-/**
- *
- * @param status
- * @param validStatuses
- * @returns {boolean}
- */
-export declare const getDefaultValidateStatus: (status: number, validStatuses?: number[]) => boolean;
-/**
- *
- * @param resource
- * @param args
- * @returns {{headers: undefined, method: string, data: *, auth: {}, validateStatus: (function(*): boolean), url: string}}
- */
-export declare const buildResource: (resource: LktResource, args: ILktObject) => IResourceBuild;
-/**
- *
- * @param resource
- * @param params
- * @returns {Promise<unknown>|Promise<Result>|Promise<any>|Promise|Promise<AxiosResponse<any>>}
- */
-export declare const callHTTPResource: (resource: LktResource, params?: ILktObject) => Promise<any>;
-export declare const $http: (resourceName?: string, params?: ILktObject, options?: IMixinOptions) => Promise<any>;
+import { LktObject } from 'lkt-ts-interfaces';
+export declare const httpCall: (resourceName?: string, params?: LktObject) => Promise<any>;

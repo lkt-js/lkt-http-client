@@ -1,10 +1,10 @@
-import { LktResource } from "./LktResource";
-import { LktEnvironment } from "./LktEnvironment";
-import { IResourceStack } from "../interfaces/IResourceStack";
-import { IEnvironmentStack } from "../interfaces/IEnvironmentStack";
+import { EnvironmentStack } from '../interfaces/EnvironmentStack';
+import { ResourceStack } from '../interfaces/ResourceStack';
+import { LktEnvironment } from './LktEnvironment';
+import { LktResource } from './LktResource';
 export declare class LktRouter {
-    static RESOURCES: IResourceStack;
-    static ENVIRONMENTS: IEnvironmentStack;
+    static RESOURCES: ResourceStack;
+    static ENVIRONMENTS: EnvironmentStack;
     static DEFAULT_ENVIRONMENT: string;
     /**
      *
@@ -21,7 +21,8 @@ export declare class LktRouter {
      *
      * @param name
      */
-    static getResource(name: string): LktResource;
+    static getResource: (name: string) => LktResource;
+    static existsResource: (name: string) => boolean;
     /**
      *
      * @param name

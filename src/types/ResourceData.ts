@@ -8,7 +8,7 @@ import { StatusValidator } from './StatusValidator';
 export type ResourceData = {
   url: string;
   name: string;
-  method: ResourceMethod;
+  method?: ResourceMethod;
   headers?: LktObject;
   dataType?: ResourceDataType;
   isFileUpload?: boolean;

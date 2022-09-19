@@ -20,10 +20,9 @@ export default {
         outDir,
         minify: true,
         rollupOptions: {
-            external: [ 'lkt-tools', 'axios', 'downloadjs' ],
+            external: [ 'axios', 'downloadjs', 'lkt-control-tools', 'lkt-string-tools', 'lkt-object-tools', 'lkt-ts-interfaces' ],
             output: {
                 globals: {
-                    "lkt-tools": 'LktTools',
                     axios: 'axios'
                 },
                 sourcemapExcludeSources: true

@@ -1,15 +1,15 @@
 import { UserAuth } from '../types/UserAuth';
-import {ResourceNameValue} from "../value-objects/ResourceNameValue";
-import {ResourceUrlValue} from "../value-objects/ResourceUrlValue";
+import { EnvironmentUrlValue } from '../value-objects/EnvironmentUrlValue';
+import { ResourceNameValue } from '../value-objects/ResourceNameValue';
 
 export class LktEnvironment {
   name: ResourceNameValue;
-  url: ResourceUrlValue;
+  url: EnvironmentUrlValue;
   auth: UserAuth;
 
   constructor(name: string, url: string, auth?: UserAuth) {
     this.name = new ResourceNameValue(name);
-    this.url = new ResourceUrlValue(url);
+    this.url = new EnvironmentUrlValue(url);
     this.auth = auth;
   }
 }

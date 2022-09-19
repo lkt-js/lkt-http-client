@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { extractFillData, fill } from 'lkt-string-tools';
-import { deleteObjectKeys, emptyPromise, trim } from 'lkt-tools';
+import {emptyPromise} from "lkt-control-tools";
+import {deleteObjectProperties} from "lkt-object-tools";
+import { extractFillData, fill, trim } from 'lkt-string-tools';
 import { LktObject } from 'lkt-ts-interfaces';
 
 import { paramsToString } from '../functions/helpers';
@@ -67,11 +68,13 @@ export class LktResource {
       Settings.RESOURCE_PARAM_LEFT_SEPARATOR,
       Settings.RESOURCE_PARAM_RIGHT_SEPARATOR
     );
-    r = deleteObjectKeys(r, toDelete);
+    r = deleteObjectProperties(r, toDelete);
 
     if (this.method.hasUrlParams()) {
       const stringParams = paramsToString(r);
-      link = [link, stringParams].join('?');
+      if (stringParams.length > 0) {
+        link = [link, stringParams].join('?');
+      }
       r = {};
     }
 

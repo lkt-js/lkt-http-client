@@ -39,6 +39,10 @@ export class LktRouter {
     return undefined;
   };
 
+  static existsResource = (name: string): boolean => {
+    return LktRouter.RESOURCES[name] instanceof LktResource;
+  }
+
   /**
    *
    * @param name

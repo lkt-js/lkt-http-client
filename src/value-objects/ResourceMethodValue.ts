@@ -5,7 +5,7 @@ export class ResourceMethodValue {
 
     constructor(value?: ResourceMethod) {
         if (!value) {
-            throw new Error("A resource must have a valid method");
+            value = 'get';
         }
         this.value = value;
     }
