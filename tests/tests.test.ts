@@ -1,6 +1,6 @@
 import {
   createHTTPEnvironment,
-  createHTTPGetResource,
+  createHTTPGetResource, createHTTPPostResource,
   createHTTPPutResource,
 } from '../src';
 import { LktResource } from '../src/classes/LktResource';
@@ -63,7 +63,7 @@ test('call a resource get with custom environment', () => {
     name: 'default'
   };
 
-  const environment = createHTTPEnvironment(envData);
+  createHTTPEnvironment(envData);
 
   const resourceData: ResourceData = {
     url: '/api/test/create/{name}',
@@ -86,6 +86,74 @@ test('call a resource get with custom environment', () => {
   expect(build).toBeInstanceOf(ResourceBuild);
   expect(build.url).toEqual('http://localhost/api/test/create/lorem?type=ipsum');
   expect(build.data).toEqual({});
+  expect(build.statusValidator(200)).toEqual(true);
+});
+
+test('renaming params', () => {
+
+  const envData: EnvironmentData = {
+    url: 'http://localhost',
+    name: 'default'
+  };
+
+  createHTTPEnvironment(envData);
+
+  const resourceData: ResourceData = {
+    url: '/api/test/create/{name}',
+    name: 'create-test-item',
+    params: {
+      id: { default: undefined, renameTo: 'code' },
+      name: { default: undefined },
+      type: { default: undefined },
+      isSomething: { default: undefined },
+    },
+    environment: 'default'
+  };
+
+  const resource = createHTTPPostResource(resourceData);
+
+  expect(resource).toBeInstanceOf(LktResource);
+
+  const build = resource.build({ id: 1, name: 'lorem', type: 'ipsum' });
+
+  expect(build).toBeInstanceOf(ResourceBuild);
+  expect(build.url).toEqual('http://localhost/api/test/create/lorem');
+  expect(build.data).toEqual({code: 1, type: 'ipsum'});
+  expect(build.statusValidator(200)).toEqual(true);
+});
+
+test('validate params', () => {
+
+  const envData: EnvironmentData = {
+    url: 'http://localhost',
+    name: 'default'
+  };
+
+  createHTTPEnvironment(envData);
+
+  const resourceData: ResourceData = {
+    url: '/api/test/create/{name}',
+    name: 'create-test-item',
+    params: {
+      id: { default: undefined, renameTo: 'code', type: "number" },
+      name: { default: undefined, type: "string" },
+      type: { default: 'defaultValue', type: "string" },
+      isSomething: { default: undefined, type: "boolean" },
+      someArray: { default: undefined, type: "array" },
+      someObject: { default: undefined, type: "object" },
+    },
+    environment: 'default'
+  };
+
+  const resource = createHTTPPostResource(resourceData);
+
+  expect(resource).toBeInstanceOf(LktResource);
+
+  const build = resource.build({ id: 1, name: 'lorem', isSomething: false, someArray: [], someObject: {} });
+
+  expect(build).toBeInstanceOf(ResourceBuild);
+  expect(build.url).toEqual('http://localhost/api/test/create/lorem');
+  expect(build.data).toEqual({code: 1, type: 'defaultValue', someArray: [], someObject: {}});
   expect(build.statusValidator(200)).toEqual(true);
 });
 

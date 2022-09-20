@@ -23,7 +23,10 @@ export default {
             external: [ 'axios', 'downloadjs', 'lkt-control-tools', 'lkt-string-tools', 'lkt-object-tools', 'lkt-ts-interfaces' ],
             output: {
                 globals: {
-                    axios: 'axios'
+                    axios: 'axios',
+                    'lkt-control-tools': 'LktControlTools',
+                    'lkt-string-tools': 'LktStringTools',
+                    'lkt-object-tools': 'LktObjectTools',
                 },
                 sourcemapExcludeSources: true
             }

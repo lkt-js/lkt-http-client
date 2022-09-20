@@ -1,3 +1,4 @@
+import {toString} from "lkt-string-tools";
 import { LktObject } from 'lkt-ts-interfaces';
 
 import { ResourceParamStack } from '../interfaces/ResourceParamStack';
@@ -12,16 +13,6 @@ export class ResourceParamsValue {
     this.value = value;
   }
 
-  private getDefaultValues() {
-    const keys = Object.keys(this.value);
-    const r: LktObject = {};
-    keys.forEach((z) => {
-      if (this.value[z].default) {
-        r[z] = this.value[z].default;
-      }
-    });
-  }
-
   prepareValues(values?: LktObject, asFormData: boolean = false) {
     if (!values) {
       values = {};
@@ -32,11 +23,34 @@ export class ResourceParamsValue {
     const r: LktObject = asFormData ? new window.FormData() : {};
 
     keys.forEach((key) => {
-      if (values[key]) {
+      const defaultValue = this.value[key].default || null;
+      if (values[key] || defaultValue) {
+
+        const rename = this.value[key].renameTo || null;
+        const storeKey = rename || key;
+        let value = values[key] || defaultValue;
+        const type = this.value[key].type || null;
+
+        if (type && value !== null && typeof value !== undefined) {
+          if (type === 'string' && typeof value !== 'string') {
+            value = toString(value);
+          } else if (type === 'number' && typeof value !== 'number') {
+            value = Number(value);
+          } else if (type === 'boolean' && typeof value !== 'boolean') {
+            throw new Error(`Param '${key}' must be of type boolean. '${value}' received`);
+
+          } else if (type === 'array' && !Array.isArray(value)) {
+            throw new Error(`Param '${key}' must be a valid array. '${value}' received`);
+
+          } else if (type === 'object' && typeof value !== 'object') {
+            throw new Error(`Param '${key}' must be a valid object. '${value}' received`);
+          }
+        }
+
         if (asFormData) {
-          r.append(key, values[key]);
+          r.append(storeKey, value);
         } else {
-          r[key] = values[key];
+          r[storeKey] = value;
         }
       }
     });

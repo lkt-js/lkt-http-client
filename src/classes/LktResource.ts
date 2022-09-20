@@ -16,6 +16,8 @@ import { ResourceNameValue } from '../value-objects/ResourceNameValue';
 import { ResourceParamsValue } from '../value-objects/ResourceParamsValue';
 import { ResourceUrlValue } from '../value-objects/ResourceUrlValue';
 import { ResponseSuccessHookValue } from '../value-objects/ResponseSuccessHookValue';
+import {ReturnsFullResponseValue} from "../value-objects/ReturnsFullResponseValue";
+import {ReturnsResponseDigValue} from "../value-objects/ReturnsResponseDigValue";
 import { ValidResponseStatuses } from '../value-objects/ValidResponseStatuses';
 import { ResourceBuild } from './ResourceBuild';
 
@@ -32,6 +34,8 @@ export class LktResource {
   private validStatuses: ValidResponseStatuses;
   private fetchStatus: ResourceFetchStatus;
   private onSuccess: ResponseSuccessHookValue;
+  private returnsFullResponse: ReturnsFullResponseValue;
+  private returnsResponseDig: ReturnsResponseDigValue;
 
   constructor(data: ResourceData) {
     this.data = data;
@@ -46,6 +50,8 @@ export class LktResource {
     this.validStatuses = new ValidResponseStatuses(data.validStatuses);
     this.fetchStatus = new ResourceFetchStatus();
     this.onSuccess = new ResponseSuccessHookValue(data.onSuccess);
+    this.returnsFullResponse = new ReturnsFullResponseValue(data.returnsFullResponse);
+    this.returnsResponseDig = new ReturnsResponseDigValue(data.returnsResponseDig);
   }
 
   build(params: LktObject) {
@@ -117,13 +123,19 @@ export class LktResource {
         this.fetchStatus.start();
 
         return axios(build as unknown as AxiosRequestConfig)
-          .then((promise: AxiosResponse) => {
+          .then((response: AxiosResponse) => {
             this.fetchStatus.stop();
 
-            if (this.onSuccess.hasActionDefined()) {
-              return this.onSuccess.run(promise);
+            let r = this.returnsFullResponse.value ? response : response.data;
+
+            if (this.returnsResponseDig.hasToDig()) {
+              r = this.returnsResponseDig.dig(r);
             }
-            return promise;
+
+            if (this.onSuccess.hasActionDefined()) {
+              return this.onSuccess.run(r);
+            }
+            return r;
           })
           .catch((error) => {
             this.fetchStatus.stop();

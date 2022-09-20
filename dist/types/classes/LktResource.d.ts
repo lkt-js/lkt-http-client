@@ -14,6 +14,8 @@ export declare class LktResource {
     private validStatuses;
     private fetchStatus;
     private onSuccess;
+    private returnsFullResponse;
+    private returnsResponseDig;
     constructor(data: ResourceData);
     build(params: LktObject): ResourceBuild;
     call(params: LktObject): Promise<any>;

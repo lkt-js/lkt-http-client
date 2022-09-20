@@ -1,3 +1,5 @@
 export type ResourceParam = {
-    default?: any
+    default?: any,
+    renameTo?: string
+    type?: 'string' | 'number' | 'array' | 'object' | 'boolean'
 }

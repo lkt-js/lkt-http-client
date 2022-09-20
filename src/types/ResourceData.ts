@@ -16,5 +16,7 @@ export type ResourceData = {
   validateStatus?: StatusValidator;
   environment?: string;
   params?: ResourceParamStack;
+  returnsFullResponse?: boolean;
+  returnsResponseDig?: string;
   onSuccess?: Function;
 };
