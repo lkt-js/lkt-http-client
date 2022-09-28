@@ -1,11 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import {emptyPromise} from "lkt-control-tools";
-import {deleteObjectProperties} from "lkt-object-tools";
-import { extractFillData, fill, trim } from 'lkt-string-tools';
+import { successPromise } from 'lkt-control-tools';
+import { trim } from 'lkt-string-tools';
 import { LktObject } from 'lkt-ts-interfaces';
 
 import { paramsToString } from '../functions/helpers';
-import { Settings } from '../settings/Settings';
 import { ResourceData } from '../types/ResourceData';
 import { DataTypeValue } from '../value-objects/DataTypeValue';
 import { EnvironmentValue } from '../value-objects/EnvironmentValue';
@@ -16,8 +14,8 @@ import { ResourceNameValue } from '../value-objects/ResourceNameValue';
 import { ResourceParamsValue } from '../value-objects/ResourceParamsValue';
 import { ResourceUrlValue } from '../value-objects/ResourceUrlValue';
 import { ResponseSuccessHookValue } from '../value-objects/ResponseSuccessHookValue';
-import {ReturnsFullResponseValue} from "../value-objects/ReturnsFullResponseValue";
-import {ReturnsResponseDigValue} from "../value-objects/ReturnsResponseDigValue";
+import { ReturnsFullResponseValue } from '../value-objects/ReturnsFullResponseValue';
+import { ReturnsResponseDigValue } from '../value-objects/ReturnsResponseDigValue';
 import { ValidResponseStatuses } from '../value-objects/ValidResponseStatuses';
 import { ResourceBuild } from './ResourceBuild';
 
@@ -50,38 +48,29 @@ export class LktResource {
     this.validStatuses = new ValidResponseStatuses(data.validStatuses);
     this.fetchStatus = new ResourceFetchStatus();
     this.onSuccess = new ResponseSuccessHookValue(data.onSuccess);
-    this.returnsFullResponse = new ReturnsFullResponseValue(data.returnsFullResponse);
-    this.returnsResponseDig = new ReturnsResponseDigValue(data.returnsResponseDig);
+    this.returnsFullResponse = new ReturnsFullResponseValue(
+      data.returnsFullResponse
+    );
+    this.returnsResponseDig = new ReturnsResponseDigValue(
+      data.returnsResponseDig
+    );
   }
 
   build(params: LktObject) {
-    let r: LktObject = this.params.prepareValues(
+    let data: LktObject = this.params.prepareValues(
       params,
       this.isFileUpload.value
     );
 
     const url = this.url.prepare(this.environment.getUrl());
-
-    const toDelete = extractFillData(
-      url,
-      r,
-      Settings.RESOURCE_PARAM_LEFT_SEPARATOR,
-      Settings.RESOURCE_PARAM_RIGHT_SEPARATOR
-    );
-    let link = fill(
-      url,
-      r,
-      Settings.RESOURCE_PARAM_LEFT_SEPARATOR,
-      Settings.RESOURCE_PARAM_RIGHT_SEPARATOR
-    );
-    r = deleteObjectProperties(r, toDelete);
+    let link = this.params.replaceUrlValues(url, params);
 
     if (this.method.hasUrlParams()) {
-      const stringParams = paramsToString(r);
+      const stringParams = paramsToString(data);
       if (stringParams.length > 0) {
         link = [link, stringParams].join('?');
       }
-      r = {};
+      data = {};
     }
 
     const statusValidator = (status: number) =>
@@ -97,7 +86,7 @@ export class LktResource {
     return new ResourceBuild(
       link,
       this.method.toPrimitive(),
-      r,
+      data,
       this.environment.getAuth(),
       statusValidator,
       headers
@@ -107,12 +96,8 @@ export class LktResource {
   call(params: LktObject): Promise<any> {
     const build = this.build(params);
 
-    const emptyResponse = (resolve: any, reject: any) => {
-      resolve(undefined);
-    };
-
     if (this.fetchStatus.inProgress()) {
-      return emptyPromise(emptyResponse);
+      return successPromise();
     }
 
     switch (build.method) {
