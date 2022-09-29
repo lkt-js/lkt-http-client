@@ -93,7 +93,7 @@ export class LktResource {
     );
   }
 
-  call(params: LktObject): Promise<any> {
+  async call(params: LktObject): Promise<any> {
     const build = this.build(params);
 
     if (this.fetchStatus.inProgress()) {
@@ -107,7 +107,7 @@ export class LktResource {
       case 'delete':
         this.fetchStatus.start();
 
-        return axios(build as unknown as AxiosRequestConfig)
+        return await axios(build as unknown as AxiosRequestConfig)
           .then((response: AxiosResponse) => {
             this.fetchStatus.stop();
 

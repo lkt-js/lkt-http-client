@@ -1,4 +1,4 @@
-import { emptyPromise } from 'lkt-control-tools';
+import { successPromise } from 'lkt-control-tools';
 
 import { ResourceCallerConfig } from '../types/ResourceCallerConfig';
 import { ResourceAliasValue } from '../value-objects/ResourceAliasValue';
@@ -17,11 +17,11 @@ export class ResourceCaller {
     return this.resource.exists();
   }
 
-  call() {
+  async call() {
     if (this.isCallable()) {
-      return this.resource.call(this.params.getParams());
+      return await this.resource.call(this.params.getParams());
     }
 
-    return emptyPromise();
+    return await successPromise();
   }
 }

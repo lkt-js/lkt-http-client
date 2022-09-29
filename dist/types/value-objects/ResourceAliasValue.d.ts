@@ -1,4 +1,4 @@
-import { ResourceParamStack } from "../interfaces/ResourceParamStack";
+import { ResourceParamStack } from '../interfaces/ResourceParamStack';
 export declare class ResourceAliasValue {
     private readonly value;
     constructor(value?: string);

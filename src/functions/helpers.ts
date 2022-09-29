@@ -23,5 +23,14 @@ export const paramsToString = (params: LktObject) => {
  * @param name
  */
 export const existsHTTPResource = (name: string): boolean => {
-    return LktRouter.existsResource(name);
+    return getRouter().resources.exists(name);
+}
+
+export const getRouter = () => {
+  if (!(LktRouter.router instanceof LktRouter)) {
+    LktRouter.router = new LktRouter();
+  }
+
+  return LktRouter.router;
+
 }

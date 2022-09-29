@@ -4,6 +4,7 @@ import { createHTTPEnvironment } from './functions/startup-functions';
 
 export { ResourceCaller } from './classes/ResourceCaller';
 export { existsHTTPResource } from './functions/helpers';
+export { getRouter } from './functions/helpers';
 export { httpCall } from './functions/http-functions';
 export {
   createHTTPDeleteResource,

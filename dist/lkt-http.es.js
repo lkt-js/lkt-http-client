@@ -1,17 +1,17 @@
-var g = Object.defineProperty;
-var A = (t, e, n) => e in t ? g(t, e, { enumerable: !0, configurable: !0, writable: !0, value: n }) : t[e] = n;
-var s = (t, e, n) => (A(t, typeof e != "symbol" ? e + "" : e, n), n);
-import T from "axios";
-import { successPromise as O, emptyPromise as N } from "lkt-control-tools";
-import { toString as V, fill as U, trim as R } from "lkt-string-tools";
+var A = Object.defineProperty;
+var V = (t, e, n) => e in t ? A(t, e, { enumerable: !0, configurable: !0, writable: !0, value: n }) : t[e] = n;
+var s = (t, e, n) => (V(t, typeof e != "symbol" ? e + "" : e, n), n);
+import E from "axios";
+import { successPromise as g } from "lkt-control-tools";
+import { toString as b, fill as y, trim as v } from "lkt-string-tools";
 import { fetchInObject as D } from "lkt-object-tools";
-class b {
+class O {
   constructor(e) {
     s(this, "value");
     e || (e = ""), this.value = e;
   }
 }
-class w {
+class P {
   constructor(e) {
     s(this, "value");
     if (e === "")
@@ -19,38 +19,59 @@ class w {
     this.value = e;
   }
 }
-class S {
+class R {
   constructor(e, n, r) {
     s(this, "name");
     s(this, "url");
     s(this, "auth");
-    this.name = new w(e), this.url = new b(n), this.auth = r;
+    this.name = new P(e), this.url = new O(n), this.auth = r;
   }
 }
-const l = class {
-  static addResource(e) {
-    l.RESOURCES[e.name.value] = e;
+class U {
+  constructor() {
+    s(this, "value", {});
   }
-  static addEnvironment(e) {
-    typeof l.DEFAULT_ENVIRONMENT > "u" && (l.DEFAULT_ENVIRONMENT = e.name.value), l.ENVIRONMENTS[e.name.value] = e;
+  add(e) {
+    this.value[e.name.value] = e;
   }
-  static getEnvironment(e) {
-    if (l.ENVIRONMENTS[e] instanceof S)
-      return l.ENVIRONMENTS[e];
+  get(e) {
+    if (this.value[e] instanceof R)
+      return this.value[e];
   }
-};
-let u = l;
-s(u, "RESOURCES", {}), s(u, "ENVIRONMENTS", {}), s(u, "DEFAULT_ENVIRONMENT"), s(u, "getResource", (e) => {
-  if (l.RESOURCES[e] instanceof v)
-    return l.RESOURCES[e];
-}), s(u, "existsResource", (e) => l.RESOURCES[e] instanceof v);
-const y = (t) => {
+  exists(e) {
+    return this.value[e] instanceof R;
+  }
+}
+class x {
+  constructor() {
+    s(this, "value", {});
+  }
+  add(e) {
+    this.value[e.name.value] = e;
+  }
+  get(e) {
+    if (this.value[e] instanceof w)
+      return this.value[e];
+  }
+  exists(e) {
+    return this.value[e] instanceof w;
+  }
+}
+class c {
+  constructor() {
+    s(this, "resources");
+    s(this, "environments");
+    this.resources = new x(), this.environments = new U();
+  }
+}
+s(c, "router"), s(c, "DEFAULT_ENVIRONMENT");
+const F = (t) => {
   const e = [];
   return Object.keys(t).forEach((r) => {
     Array.isArray(t[r]) ? t[r].length > 0 && e.push(`${r}=${JSON.stringify(t[r])}`) : e.push(`${r}=${t[r]}`);
   }), e.join("&");
-}, k = (t) => u.existsResource(t);
-class F {
+}, ee = (t) => d().resources.exists(t), d = () => (c.router instanceof c || (c.router = new c()), c.router);
+class H {
   constructor(e) {
     s(this, "value");
     e || (e = "json"), this.value = e;
@@ -59,27 +80,27 @@ class F {
     return this.value === "json";
   }
 }
-class x {
+class _ {
   constructor(e) {
     s(this, "value");
     e || (e = "default"), this.value = e;
   }
   getUrl() {
-    const e = E(this.value);
+    const e = T(this.value);
     return e ? e.url.value : "";
   }
   getAuth() {
-    const e = E(this.value);
+    const e = T(this.value);
     return e && e.auth ? e.auth : {};
   }
 }
-class C {
+class $ {
   constructor(e) {
     s(this, "value");
     e || (e = !1), this.value = e;
   }
 }
-class H {
+class j {
   constructor(e = !1) {
     s(this, "value");
     this.value = e;
@@ -94,7 +115,7 @@ class H {
     this.value = !1;
   }
 }
-class $ {
+class N {
   constructor(e) {
     s(this, "value");
     e || (e = "get"), this.value = e;
@@ -127,7 +148,7 @@ class $ {
 class p {
 }
 s(p, "RESOURCE_PARAM_LEFT_SEPARATOR", "{"), s(p, "RESOURCE_PARAM_RIGHT_SEPARATOR", "}");
-class j {
+class C {
   constructor(e) {
     s(this, "value");
     e || (e = {}), this.value = e;
@@ -136,26 +157,26 @@ class j {
     e || (e = {});
     const r = Object.keys(this.value), o = n ? new window.FormData() : {};
     return r.forEach((a) => {
-      const c = this.value[a].default || null;
-      if (e[a] || c) {
+      const u = this.value[a].default || null;
+      if (e[a] || u) {
         const m = this.value[a].renameTo || null || a;
-        let i = e[a] || c;
-        const d = this.value[a].type || null;
-        if (d && i !== null && typeof i !== void 0)
-          if (d === "string" && typeof i != "string")
-            i = V(i);
-          else if (d === "number" && typeof i != "number")
+        let i = e[a] || u;
+        const h = this.value[a].type || null;
+        if (h && i !== null && typeof i !== void 0)
+          if (h === "string" && typeof i != "string")
+            i = b(i);
+          else if (h === "number" && typeof i != "number")
             i = Number(i);
           else {
-            if (d === "boolean" && typeof i != "boolean")
+            if (h === "boolean" && typeof i != "boolean")
               throw new Error(
                 `Param '${a}' must be of type boolean. '${i}' received`
               );
-            if (d === "array" && !Array.isArray(i))
+            if (h === "array" && !Array.isArray(i))
               throw new Error(
                 `Param '${a}' must be a valid array. '${i}' received`
               );
-            if (d === "object" && typeof i != "object")
+            if (h === "object" && typeof i != "object")
               throw new Error(
                 `Param '${a}' must be a valid object. '${i}' received`
               );
@@ -166,7 +187,7 @@ class j {
   }
   replaceUrlValues(e, n) {
     const r = this.prepareValues(n, !1);
-    return U(
+    return y(
       e,
       r,
       p.RESOURCE_PARAM_LEFT_SEPARATOR,
@@ -174,7 +195,7 @@ class j {
     );
   }
 }
-class I {
+class L {
   constructor(e) {
     s(this, "value");
     if (e === "")
@@ -197,7 +218,7 @@ class M {
     return this.value(e);
   }
 }
-class _ {
+class I {
   constructor(e) {
     s(this, "value");
     e || (e = !1), this.value = e;
@@ -215,7 +236,7 @@ class G {
     return D(e, this.value);
   }
 }
-class L {
+class J {
   constructor(e) {
     s(this, "value");
     e || (e = [200, 201, 202]), this.value = e;
@@ -224,18 +245,18 @@ class L {
     return this.value.includes(e);
   }
 }
-class J {
-  constructor(e, n, r, o, a, c) {
+class q {
+  constructor(e, n, r, o, a, u) {
     s(this, "url");
     s(this, "method");
     s(this, "data");
     s(this, "auth");
     s(this, "statusValidator");
     s(this, "headers");
-    this.url = e, this.method = n, this.data = r, this.auth = o, this.statusValidator = a, this.headers = c;
+    this.url = e, this.method = n, this.data = r, this.auth = o, this.statusValidator = a, this.headers = u;
   }
 }
-class v {
+class w {
   constructor(e) {
     s(this, "data");
     s(this, "url");
@@ -250,7 +271,7 @@ class v {
     s(this, "onSuccess");
     s(this, "returnsFullResponse");
     s(this, "returnsResponseDig");
-    this.data = e, this.url = new I(e.url), this.name = new w(e.name), this.method = new $(e.method), this.environment = new x(e.environment), this.dataType = new F(e.dataType), this.params = new j(e.params), this.isFileUpload = new C(e.isFileUpload), this.validStatuses = new L(e.validStatuses), this.fetchStatus = new H(), this.onSuccess = new M(e.onSuccess), this.returnsFullResponse = new _(
+    this.data = e, this.url = new L(e.url), this.name = new P(e.name), this.method = new N(e.method), this.environment = new _(e.environment), this.dataType = new H(e.dataType), this.params = new C(e.params), this.isFileUpload = new $(e.isFileUpload), this.validStatuses = new J(e.validStatuses), this.fetchStatus = new j(), this.onSuccess = new M(e.onSuccess), this.returnsFullResponse = new I(
       e.returnsFullResponse
     ), this.returnsResponseDig = new G(
       e.returnsResponseDig
@@ -264,46 +285,46 @@ class v {
     const r = this.url.prepare(this.environment.getUrl());
     let o = this.params.replaceUrlValues(r, e);
     if (this.method.hasUrlParams()) {
-      const h = y(n);
-      h.length > 0 && (o = [o, h].join("?")), n = {};
+      const l = F(n);
+      l.length > 0 && (o = [o, l].join("?")), n = {};
     }
-    const a = (h) => this.validStatuses.includes(h);
-    let c;
-    return this.isFileUpload.value && (c = {
+    const a = (l) => this.validStatuses.includes(l);
+    let u;
+    return this.isFileUpload.value && (u = {
       "Content-Type": "multipart/form-data"
-    }), new J(
+    }), new q(
       o,
       this.method.toPrimitive(),
       n,
       this.environment.getAuth(),
       a,
-      c
+      u
     );
   }
-  call(e) {
+  async call(e) {
     const n = this.build(e);
     if (this.fetchStatus.inProgress())
-      return O();
+      return g();
     switch (n.method) {
       case "get":
       case "post":
       case "put":
       case "delete":
-        return this.fetchStatus.start(), T(n).then((r) => {
+        return this.fetchStatus.start(), await E(n).then((r) => {
           this.fetchStatus.stop();
           let o = this.returnsFullResponse.value ? r : r.data;
           return this.returnsResponseDig.hasToDig() && (o = this.returnsResponseDig.dig(o)), this.onSuccess.hasActionDefined() ? this.onSuccess.run(o) : o;
         }).catch((r) => (this.fetchStatus.stop(), Promise.reject(new Error(r))));
       case "download":
       case "open":
-        return T.get(n.url, { responseType: "blob" }).then((r) => {
+        return E.get(n.url, { responseType: "blob" }).then((r) => {
           const o = r.headers["content-disposition"];
           let a = "";
-          return o && o.split(";").forEach((h) => {
-            const m = h.split("=");
-            if (R(m[0]) === "filename") {
-              let i = R(m[1]);
-              i = R(i, '"'), a = i;
+          return o && o.split(";").forEach((l) => {
+            const m = l.split("=");
+            if (v(m[0]) === "filename") {
+              let i = v(m[1]);
+              i = v(i, '"'), a = i;
             }
           }), window.download(r.data, a), this.onSuccess.hasActionDefined() ? this.onSuccess.run(r) : r;
         }).catch((r) => r);
@@ -314,44 +335,44 @@ class v {
     }
   }
 }
-const ee = (t) => {
+const te = (t) => {
   const e = { ...t, method: "get" };
   return f(e);
-}, te = (t) => {
+}, se = (t) => {
   const e = { ...t, method: "post" };
   return f(e);
-}, se = (t) => {
+}, re = (t) => {
   const e = { ...t, method: "put" };
   return f(e);
-}, re = (t) => {
+}, ne = (t) => {
   const e = { ...t, method: "delete" };
   return f(e);
-}, ne = (t) => {
+}, ie = (t) => {
   const e = { ...t, method: "open" };
   return f(e);
-}, ie = (t) => {
+}, oe = (t) => {
   const e = { ...t, method: "download" };
   return f(e);
 }, f = (t) => {
-  const e = new v(t);
-  return u.addResource(e), P(t.name);
-}, q = (t) => {
-  const e = new S(t.name, t.url, t.auth);
-  return u.addEnvironment(e), E(t.name);
-}, P = (t) => u.getResource(t), E = (t) => u.getEnvironment(t), B = (t = "", e = {}) => P(t).call(e);
-class K {
+  const e = new w(t);
+  return d().resources.add(e), S(t.name);
+}, B = (t) => {
+  const e = new R(t.name, t.url, t.auth);
+  return d().environments.add(e), T(t.name);
+}, S = (t) => d().resources.get(t), T = (t) => d().environments.get(t), K = async (t = "", e = {}) => await S(t).call(e);
+class W {
   constructor(e) {
     s(this, "value");
     e || (e = ""), this.value = e;
   }
   exists() {
-    return u.existsResource(this.value);
+    return d().resources.exists(this.value);
   }
-  call(e) {
-    return B(this.value, e);
+  async call(e) {
+    return await K(this.value, e);
   }
 }
-class W {
+class z {
   constructor(e) {
     s(this, "value");
     e || (e = {}), this.value = e;
@@ -360,36 +381,37 @@ class W {
     return this.value;
   }
 }
-class oe {
+class ae {
   constructor(e) {
     s(this, "resource");
     s(this, "params");
-    this.resource = new K(e.resource), this.params = new W(e.params);
+    this.resource = new W(e.resource), this.params = new z(e.params);
   }
   isCallable() {
     return this.resource.exists();
   }
-  call() {
-    return this.isCallable() ? this.resource.call(this.params.getParams()) : N();
+  async call() {
+    return this.isCallable() ? await this.resource.call(this.params.getParams()) : await g();
   }
 }
-const ae = {
+const ue = {
   install: (t, e) => {
-    q({ name: "default", url: "" }), window.download = require("downloadjs");
+    B({ name: "default", url: "" }), window.download = require("downloadjs");
   }
 };
 export {
-  oe as ResourceCaller,
-  re as createHTTPDeleteResource,
-  ie as createHTTPDownloadResource,
-  q as createHTTPEnvironment,
-  ee as createHTTPGetResource,
-  ne as createHTTPOpenResource,
-  te as createHTTPPostResource,
-  se as createHTTPPutResource,
-  ae as default,
-  k as existsHTTPResource,
-  E as getHTTPEnvironment,
-  P as getHTTPResource,
-  B as httpCall
+  ae as ResourceCaller,
+  ne as createHTTPDeleteResource,
+  oe as createHTTPDownloadResource,
+  B as createHTTPEnvironment,
+  te as createHTTPGetResource,
+  ie as createHTTPOpenResource,
+  se as createHTTPPostResource,
+  re as createHTTPPutResource,
+  ue as default,
+  ee as existsHTTPResource,
+  T as getHTTPEnvironment,
+  S as getHTTPResource,
+  d as getRouter,
+  K as httpCall
 };
