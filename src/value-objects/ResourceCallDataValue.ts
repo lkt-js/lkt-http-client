@@ -10,6 +10,10 @@ export class ResourceCallDataValue {
     this.value = value;
   }
 
+  setParam(key: string, value: any) {
+    this.value[key] = value;
+  }
+
   getParams() {
     return this.value;
   }

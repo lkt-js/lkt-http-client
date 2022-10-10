@@ -45,3 +45,35 @@ test('resource caller - existing resource', () => {
 
   expect(caller.call()).toBeInstanceOf(Promise);
 });
+
+test('resource caller - update params', () => {
+
+  const resourceData: ResourceData = {
+    url: '/api/test/create/{name}',
+    name: 'create-test-item',
+    method: 'put',
+    params: {
+      id: { default: undefined },
+      name: { default: undefined },
+      type: { default: undefined },
+      isSomething: { default: undefined },
+    },
+    isFileUpload: true
+  };
+
+  createHTTPPostResource(resourceData);
+
+  const config: ResourceCallerConfig = {
+    resource: 'create-test-item',
+    params: {
+      type: 'test1'
+    }
+  }
+
+  const caller = new ResourceCaller(config);
+  caller.setParam('name', 'test');
+
+  expect(caller.params.getParams()).toEqual({name: 'test', type: 'test1'});
+
+  expect(caller.call()).toBeInstanceOf(Promise);
+});

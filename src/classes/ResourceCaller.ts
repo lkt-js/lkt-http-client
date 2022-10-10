@@ -1,4 +1,5 @@
 import { successPromise } from 'lkt-control-tools';
+import {LktObject} from "lkt-ts-interfaces";
 
 import { ResourceCallerConfig } from '../types/ResourceCallerConfig';
 import { ResourceAliasValue } from '../value-objects/ResourceAliasValue';
@@ -15,6 +16,16 @@ export class ResourceCaller {
 
   isCallable() {
     return this.resource.exists();
+  }
+
+  setParam(key: string, value: any) {
+    this.params.setParam(key, value);
+  }
+
+  setParams(params: LktObject) {
+    Object.keys(params).forEach(key => {
+      this.params.setParam(key, params[key]);
+    });
   }
 
   async call() {
