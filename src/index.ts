@@ -19,7 +19,7 @@ export {
 } from './functions/startup-functions';
 export type { ResourceCallerConfig } from './types/ResourceCallerConfig';
 
-const LktHttp = {
+const LktHttpClient = {
   install: (app: any, options: LktObject) => {
     createHTTPEnvironment({ name: 'default', url: '' });
     //@ts-ignore
@@ -27,4 +27,4 @@ const LktHttp = {
   },
 };
 
-export default LktHttp;
+export default LktHttpClient;

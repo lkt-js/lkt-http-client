@@ -115,7 +115,7 @@ class $ {
     this.value = !1;
   }
 }
-class N {
+class C {
   constructor(e) {
     s(this, "value");
     e || (e = "get"), this.value = e;
@@ -148,7 +148,7 @@ class N {
 class p {
 }
 s(p, "RESOURCE_PARAM_LEFT_SEPARATOR", "{"), s(p, "RESOURCE_PARAM_RIGHT_SEPARATOR", "}");
-class C {
+class N {
   constructor(e) {
     s(this, "value");
     e || (e = {}), this.value = e;
@@ -271,7 +271,7 @@ class w {
     s(this, "onSuccess");
     s(this, "returnsFullResponse");
     s(this, "returnsResponseDig");
-    this.data = e, this.url = new L(e.url), this.name = new g(e.name), this.method = new N(e.method), this.environment = new j(e.environment), this.dataType = new H(e.dataType), this.params = new C(e.params), this.isFileUpload = new _(e.isFileUpload), this.validStatuses = new J(e.validStatuses), this.fetchStatus = new $(), this.onSuccess = new M(e.onSuccess), this.returnsFullResponse = new I(
+    this.data = e, this.url = new L(e.url), this.name = new g(e.name), this.method = new C(e.method), this.environment = new j(e.environment), this.dataType = new H(e.dataType), this.params = new N(e.params), this.isFileUpload = new _(e.isFileUpload), this.validStatuses = new J(e.validStatuses), this.fetchStatus = new $(), this.onSuccess = new M(e.onSuccess), this.returnsFullResponse = new I(
       e.returnsFullResponse
     ), this.returnsResponseDig = new G(
       e.returnsResponseDig
