@@ -39,9 +39,9 @@
   "author": "Antonio Ibáñez",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlhub.com/lekrat/lkt-http-client/issues"
+    "url": "https://github.com/lekrat/lkt-http-client/issues"
   },
-  "homepage": "https://gitlhub.com/lekrat/lkt-http-client#readme",
+  "homepage": "https://github.com/lekrat/lkt-http-client#readme",
   "devDependencies": {
     "@babel/core": "^7.13.13",
     "@babel/preset-env": "^7.13.12",
