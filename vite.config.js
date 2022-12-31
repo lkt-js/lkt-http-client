@@ -15,7 +15,7 @@ export default {
         lib: {
             entry: `${ src }/index.ts`,
             name: 'LktHTTP',
-            fileName: (format) => `lkt-http.${ format }.js`
+            fileName: (format) => `lkt-http-client.${ format }.js`
         },
         outDir,
         minify: true,
