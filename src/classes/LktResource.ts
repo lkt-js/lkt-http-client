@@ -8,6 +8,7 @@ import { ResourceData } from '../types/ResourceData';
 import { DataTypeValue } from '../value-objects/DataTypeValue';
 import { EnvironmentValue } from '../value-objects/EnvironmentValue';
 import { IsFileUploadValue } from '../value-objects/IsFileUploadValue';
+import {MaxPageDigValue} from "../value-objects/MaxPageDigValue";
 import { ResourceFetchStatus } from '../value-objects/ResourceFetchStatus';
 import { ResourceMethodValue } from '../value-objects/ResourceMethodValue';
 import { ResourceNameValue } from '../value-objects/ResourceNameValue';
@@ -34,6 +35,9 @@ export class LktResource {
   private onSuccess: ResponseSuccessHookValue;
   private returnsFullResponse: ReturnsFullResponseValue;
   private returnsResponseDig: ReturnsResponseDigValue;
+  private maxPageDig: MaxPageDigValue;
+
+  private latestMaxPage: number = -1;
 
   constructor(data: ResourceData) {
     this.data = data;
@@ -54,6 +58,15 @@ export class LktResource {
     this.returnsResponseDig = new ReturnsResponseDigValue(
       data.returnsResponseDig
     );
+    this.maxPageDig = new MaxPageDigValue(
+      data.maxPageDig
+    );
+    this.latestMaxPage = -1;
+  }
+
+  getLatestMaxPage(): number
+  {
+    return this.latestMaxPage;
   }
 
   build(params: LktObject) {
@@ -112,6 +125,12 @@ export class LktResource {
             this.fetchStatus.stop();
 
             let r = this.returnsFullResponse.value ? response : response.data;
+
+            if (this.maxPageDig.hasToDig()) {
+              this.latestMaxPage = this.maxPageDig.dig(r);
+            } else {
+              this.latestMaxPage = -1;
+            }
 
             if (this.returnsResponseDig.hasToDig()) {
               r = this.returnsResponseDig.dig(r);

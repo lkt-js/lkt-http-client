@@ -16,7 +16,10 @@ export declare class LktResource {
     private onSuccess;
     private returnsFullResponse;
     private returnsResponseDig;
+    private maxPageDig;
+    private latestMaxPage;
     constructor(data: ResourceData);
+    getLatestMaxPage(): number;
     build(params: LktObject): ResourceBuild;
     call(params: LktObject): Promise<any>;
 }

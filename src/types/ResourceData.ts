@@ -19,4 +19,5 @@ export type ResourceData = {
   returnsFullResponse?: boolean;
   returnsResponseDig?: string;
   onSuccess?: Function;
+  maxPageDig?: string;
 };
