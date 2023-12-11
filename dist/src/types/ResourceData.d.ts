@@ -15,9 +15,9 @@ export type ResourceData = {
     environment?: string;
     params?: ResourceParamStack;
     returnsFullResponse?: boolean;
-    returnsResponseDig?: string;
     onSuccess?: Function;
-    maxPageDig?: string;
-    permDig?: string;
-    modificationsDig?: string;
+    digToData?: string;
+    digToMaxPage?: string;
+    digToPerms?: string;
+    digToModifications?: string;
 };

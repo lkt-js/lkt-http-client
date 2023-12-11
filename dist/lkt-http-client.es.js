@@ -1,10 +1,10 @@
 var A = Object.defineProperty;
-var x = (t, e, r) => e in t ? A(t, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : t[e] = r;
-var s = (t, e, r) => (x(t, typeof e != "symbol" ? e + "" : e, r), r);
-import T from "axios";
+var V = (t, e, r) => e in t ? A(t, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : t[e] = r;
+var s = (t, e, r) => (V(t, typeof e != "symbol" ? e + "" : e, r), r);
+import P from "axios";
 import { successPromise as D } from "lkt-control-tools";
-import { toString as V, fill as b, trim as g } from "lkt-string-tools";
-import { fetchInObject as v } from "lkt-object-tools";
+import { toString as x, fill as b, trim as g } from "lkt-string-tools";
+import { fetchInObject as p } from "lkt-object-tools";
 class y {
   constructor(e) {
     s(this, "value");
@@ -19,7 +19,7 @@ class E {
     this.value = e;
   }
 }
-class P {
+class w {
   constructor(e, r, i) {
     s(this, "name");
     s(this, "url");
@@ -35,11 +35,11 @@ class O {
     this.value[e.name.value] = e;
   }
   get(e) {
-    if (this.value[e] instanceof P)
+    if (this.value[e] instanceof w)
       return this.value[e];
   }
   exists(e) {
-    return this.value[e] instanceof P;
+    return this.value[e] instanceof w;
   }
 }
 class U {
@@ -50,28 +50,28 @@ class U {
     this.value[e.name.value] = e;
   }
   get(e) {
-    if (this.value[e] instanceof w)
+    if (this.value[e] instanceof R)
       return this.value[e];
   }
   exists(e) {
-    return this.value[e] instanceof w;
+    return this.value[e] instanceof R;
   }
 }
-class c {
+class h {
   constructor() {
     s(this, "resources");
     s(this, "environments");
     this.resources = new U(), this.environments = new O();
   }
 }
-s(c, "router"), s(c, "DEFAULT_ENVIRONMENT");
-const M = (t) => {
+s(h, "router"), s(h, "DEFAULT_ENVIRONMENT");
+const F = (t) => {
   const e = [];
   return Object.keys(t).forEach((i) => {
     Array.isArray(t[i]) ? t[i].length > 0 && e.push(`${i}=${JSON.stringify(t[i])}`) : e.push(`${i}=${t[i]}`);
   }), e.join("&");
-}, re = (t) => m().resources.exists(t), m = () => (c.router instanceof c || (c.router = new c()), c.router);
-class F {
+}, re = (t) => d().resources.exists(t), d = () => (h.router instanceof h || (h.router = new h()), h.router);
+class H {
   constructor(e) {
     s(this, "value");
     e || (e = "json"), this.value = e;
@@ -80,27 +80,27 @@ class F {
     return this.value === "json";
   }
 }
-class H {
+class j {
   constructor(e) {
     s(this, "value");
     e || (e = "default"), this.value = e;
   }
   getUrl() {
-    const e = R(this.value);
+    const e = T(this.value);
     return e ? e.url.value : "";
   }
   getAuth() {
-    const e = R(this.value);
+    const e = T(this.value);
     return e && e.auth ? e.auth : {};
   }
 }
-class j {
+class _ {
   constructor(e) {
     s(this, "value");
     e || (e = !1), this.value = e;
   }
 }
-class _ {
+class $ {
   constructor(e) {
     s(this, "value");
     e || (e = ""), this.value = e;
@@ -109,10 +109,10 @@ class _ {
     return this.value !== "";
   }
   dig(e) {
-    return v(e, this.value);
+    return p(e, this.value);
   }
 }
-class $ {
+class C {
   constructor(e = !1) {
     s(this, "value");
     this.value = e;
@@ -127,7 +127,7 @@ class $ {
     this.value = !1;
   }
 }
-class C {
+class M {
   constructor(e) {
     s(this, "value");
     e || (e = "get"), this.value = e;
@@ -157,9 +157,9 @@ class C {
     return this.isGET() || this.isOPEN();
   }
 }
-class p {
+class v {
 }
-s(p, "RESOURCE_PARAM_LEFT_SEPARATOR", "{"), s(p, "RESOURCE_PARAM_RIGHT_SEPARATOR", "}");
+s(v, "RESOURCE_PARAM_LEFT_SEPARATOR", "{"), s(v, "RESOURCE_PARAM_RIGHT_SEPARATOR", "}");
 class N {
   constructor(e) {
     s(this, "value");
@@ -171,29 +171,29 @@ class N {
     return i.forEach((o) => {
       const u = this.value[o].default || null;
       if (e[o] || u) {
-        const f = this.value[o].renameTo || null || o;
+        const c = this.value[o].renameTo || null || o;
         let n = e[o] || u;
-        const h = this.value[o].type || null;
-        if (h && n !== null && typeof n !== void 0)
-          if (h === "string" && typeof n != "string")
-            n = V(n);
-          else if (h === "number" && typeof n != "number")
+        const m = this.value[o].type || null;
+        if (m && n !== null && typeof n !== void 0)
+          if (m === "string" && typeof n != "string")
+            n = x(n);
+          else if (m === "number" && typeof n != "number")
             n = Number(n);
           else {
-            if (h === "boolean" && typeof n != "boolean")
+            if (m === "boolean" && typeof n != "boolean")
               throw new Error(
                 `Param '${o}' must be of type boolean. '${n}' received`
               );
-            if (h === "array" && !Array.isArray(n))
+            if (m === "array" && !Array.isArray(n))
               throw new Error(
                 `Param '${o}' must be a valid array. '${n}' received`
               );
-            if (h === "object" && typeof n != "object")
+            if (m === "object" && typeof n != "object")
               throw new Error(
                 `Param '${o}' must be a valid object. '${n}' received`
               );
           }
-        r ? a.append(f, n) : a[f] = n;
+        r ? a.append(c, n) : a[c] = n;
       }
     }), a;
   }
@@ -202,8 +202,8 @@ class N {
     return b(
       e,
       i,
-      p.RESOURCE_PARAM_LEFT_SEPARATOR,
-      p.RESOURCE_PARAM_RIGHT_SEPARATOR
+      v.RESOURCE_PARAM_LEFT_SEPARATOR,
+      v.RESOURCE_PARAM_RIGHT_SEPARATOR
     );
   }
 }
@@ -245,7 +245,7 @@ class J {
     return this.value !== "";
   }
   dig(e) {
-    return v(e, this.value);
+    return p(e, this.value);
   }
 }
 class q {
@@ -277,7 +277,7 @@ class K {
     return this.value !== "";
   }
   dig(e) {
-    return v(e, this.value);
+    return p(e, this.value);
   }
 }
 class W {
@@ -289,10 +289,10 @@ class W {
     return this.value !== "";
   }
   dig(e) {
-    return v(e, this.value);
+    return p(e, this.value);
   }
 }
-class w {
+class R {
   constructor(e) {
     s(this, "data");
     s(this, "url");
@@ -310,25 +310,7 @@ class w {
     s(this, "maxPageDig");
     s(this, "permDig");
     s(this, "modificationsDig");
-    s(this, "latestMaxPage", -1);
-    s(this, "latestPerms", []);
-    this.data = e, this.url = new L(e.url), this.name = new E(e.name), this.method = new C(e.method), this.environment = new H(e.environment), this.dataType = new F(e.dataType), this.params = new N(e.params), this.isFileUpload = new j(e.isFileUpload), this.validStatuses = new q(e.validStatuses), this.fetchStatus = new $(), this.onSuccess = new I(e.onSuccess), this.returnsFullResponse = new G(
-      e.returnsFullResponse
-    ), this.returnsResponseDig = new J(
-      e.returnsResponseDig
-    ), this.maxPageDig = new _(
-      e.maxPageDig
-    ), this.permDig = new K(
-      e.permDig
-    ), this.modificationsDig = new W(
-      e.modificationsDig
-    ), this.latestMaxPage = -1;
-  }
-  getLatestMaxPage() {
-    return this.latestMaxPage;
-  }
-  getLatestPerms() {
-    return this.latestPerms;
+    this.data = e, this.url = new L(e.url), this.name = new E(e.name), this.method = new M(e.method), this.environment = new j(e.environment), this.dataType = new H(e.dataType), this.params = new N(e.params), this.isFileUpload = new _(e.isFileUpload), this.validStatuses = new q(e.validStatuses), this.fetchStatus = new C(), this.onSuccess = new I(e.onSuccess), this.returnsFullResponse = new G(e.returnsFullResponse), this.returnsResponseDig = new J(e.digToData), this.maxPageDig = new $(e.digToMaxPage), this.permDig = new K(e.digToPerms), this.modificationsDig = new W(e.digToModifications);
   }
   build(e) {
     let r = this.params.prepareValues(
@@ -338,7 +320,7 @@ class w {
     const i = this.url.prepare(this.environment.getUrl());
     let a = this.params.replaceUrlValues(i, e);
     if (this.method.hasUrlParams()) {
-      const l = M(r);
+      const l = F(r);
       l.length > 0 && (a = [a, l].join("?")), r = {};
     }
     const o = (l) => this.validStatuses.includes(l);
@@ -363,22 +345,26 @@ class w {
       case "post":
       case "put":
       case "delete":
-        return this.fetchStatus.start(), await T(r).then((i) => {
+        return this.fetchStatus.start(), await P(r).then((i) => {
           this.fetchStatus.stop();
-          let a = this.returnsFullResponse.value ? i : i.data;
-          this.maxPageDig.hasToDig() ? this.latestMaxPage = this.maxPageDig.dig(a) : this.latestMaxPage = -1, this.permDig.hasToDig() ? this.latestPerms = this.permDig.dig(a) : this.latestPerms = void 0;
-          let o = {};
-          return this.modificationsDig.hasToDig() && (o = this.modificationsDig.dig(a)), this.returnsResponseDig.hasToDig() && (a = this.returnsResponseDig.dig(a)), this.onSuccess.hasActionDefined() ? this.onSuccess.run(a) : { data: a, maxPage: this.latestMaxPage, perms: this.latestPerms, modifications: o, response: i };
+          let a = this.returnsFullResponse.value ? i : i.data, o = -1;
+          this.maxPageDig.hasToDig() && (o = this.maxPageDig.dig(a));
+          let u;
+          this.permDig.hasToDig() && (u = this.permDig.dig(a));
+          let l = {};
+          this.modificationsDig.hasToDig() && (l = this.modificationsDig.dig(a)), this.returnsResponseDig.hasToDig() && (a = this.returnsResponseDig.dig(a));
+          const c = { data: a, maxPage: o, perms: u, modifications: l, response: i };
+          return this.onSuccess.hasActionDefined() ? this.onSuccess.run(c) : c;
         }).catch((i) => (this.fetchStatus.stop(), Promise.reject(new Error(i))));
       case "download":
       case "open":
-        return T.get(r.url, { responseType: "blob" }).then((i) => {
+        return P.get(r.url, { responseType: "blob" }).then((i) => {
           const a = i.headers["content-disposition"];
           let o = "";
           return a && a.split(";").forEach((l) => {
-            const f = l.split("=");
-            if (g(f[0]) === "filename") {
-              let n = g(f[1]);
+            const c = l.split("=");
+            if (g(c[0]) === "filename") {
+              let n = g(c[1]);
               n = g(n, '"'), o = n;
             }
           }), window.download(i.data, o), this.onSuccess.hasActionDefined() ? this.onSuccess.run(i) : i;
@@ -392,36 +378,36 @@ class w {
 }
 const ie = (t) => {
   const e = { ...t, method: "get" };
-  return d(e);
-}, ae = (t) => {
-  const e = { ...t, method: "post" };
-  return d(e);
+  return f(e);
 }, ne = (t) => {
+  const e = { ...t, method: "post" };
+  return f(e);
+}, ae = (t) => {
   const e = { ...t, method: "put" };
-  return d(e);
+  return f(e);
 }, oe = (t) => {
   const e = { ...t, method: "delete" };
-  return d(e);
+  return f(e);
 }, ue = (t) => {
   const e = { ...t, method: "open" };
-  return d(e);
+  return f(e);
 }, le = (t) => {
   const e = { ...t, method: "download" };
-  return d(e);
-}, d = (t) => {
-  const e = new w(t);
-  return m().resources.add(e), S(t.name);
+  return f(e);
+}, f = (t) => {
+  const e = new R(t);
+  return d().resources.add(e), S(t.name);
 }, z = (t) => {
-  const e = new P(t.name, t.url, t.auth);
-  return m().environments.add(e), R(t.name);
-}, S = (t) => m().resources.get(t), R = (t) => m().environments.get(t), Q = async (t = "", e = {}) => await S(t).call(e);
+  const e = new w(t.name, t.url, t.auth);
+  return d().environments.add(e), T(t.name);
+}, S = (t) => d().resources.get(t), T = (t) => d().environments.get(t), Q = async (t = "", e = {}) => await S(t).call(e);
 class X {
   constructor(e) {
     s(this, "value");
     e || (e = ""), this.value = e;
   }
   exists() {
-    return m().resources.exists(this.value);
+    return d().resources.exists(this.value);
   }
   async call(e) {
     return await Q(this.value, e);
@@ -472,12 +458,12 @@ export {
   z as createHTTPEnvironment,
   ie as createHTTPGetResource,
   ue as createHTTPOpenResource,
-  ae as createHTTPPostResource,
-  ne as createHTTPPutResource,
+  ne as createHTTPPostResource,
+  ae as createHTTPPutResource,
   he as default,
   re as existsHTTPResource,
-  R as getHTTPEnvironment,
+  T as getHTTPEnvironment,
   S as getHTTPResource,
-  m as getRouter,
+  d as getRouter,
   Q as httpCall
 };

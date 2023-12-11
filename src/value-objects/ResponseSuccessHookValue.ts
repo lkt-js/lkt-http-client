@@ -1,4 +1,4 @@
-import {AxiosResponse} from "axios";
+import {HTTPResponse} from "../types/HTTPResponse";
 
 export class ResponseSuccessHookValue {
     private readonly value?: any;
@@ -14,7 +14,7 @@ export class ResponseSuccessHookValue {
         return typeof this.value === 'function';
     }
 
-    run(axiosResponse: AxiosResponse) {
-        return this.value(axiosResponse);
+    run(response: HTTPResponse) {
+        return this.value(response);
     }
 }
