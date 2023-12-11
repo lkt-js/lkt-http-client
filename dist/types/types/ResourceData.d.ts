@@ -3,7 +3,7 @@ import { ResourceParamStack } from '../interfaces/ResourceParamStack';
 import { ResourceDataType } from './ResourceDataType';
 import { ResourceMethod } from './ResourceMethod';
 import { StatusValidator } from './StatusValidator';
-export declare type ResourceData = {
+export type ResourceData = {
     url: string;
     name: string;
     method?: ResourceMethod;
@@ -18,4 +18,6 @@ export declare type ResourceData = {
     returnsResponseDig?: string;
     onSuccess?: Function;
     maxPageDig?: string;
+    permDig?: string;
+    modificationsDig?: string;
 };

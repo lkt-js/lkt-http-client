@@ -1,5 +1,5 @@
 import { UserAuth } from "./UserAuth";
-export declare type EnvironmentData = {
+export type EnvironmentData = {
     url: string;
     name: string;
     auth?: UserAuth;

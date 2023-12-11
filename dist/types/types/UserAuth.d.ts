@@ -1,4 +1,4 @@
-export declare type UserAuth = {
+export type UserAuth = {
     user?: string;
     password?: string;
 };

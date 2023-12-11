@@ -1,1 +1,1 @@
-export declare type ResourceDataType = 'json';
+export type ResourceDataType = 'json';

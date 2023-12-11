@@ -19,6 +19,9 @@ import { ReturnsFullResponseValue } from '../value-objects/ReturnsFullResponseVa
 import { ReturnsResponseDigValue } from '../value-objects/ReturnsResponseDigValue';
 import { ValidResponseStatuses } from '../value-objects/ValidResponseStatuses';
 import { ResourceBuild } from './ResourceBuild';
+import {PermDigValue} from "../value-objects/PermDigValue";
+import {ModificationsDigValue} from "../value-objects/ModificationsDigValue";
+import {HTTPResponse} from "../types/HTTPResponse";
 
 export class LktResource {
   private readonly data: ResourceData;
@@ -36,8 +39,11 @@ export class LktResource {
   private returnsFullResponse: ReturnsFullResponseValue;
   private returnsResponseDig: ReturnsResponseDigValue;
   private maxPageDig: MaxPageDigValue;
+  private permDig: PermDigValue;
+  private modificationsDig: ModificationsDigValue;
 
   private latestMaxPage: number = -1;
+  private latestPerms: string[]|undefined = [];
 
   constructor(data: ResourceData) {
     this.data = data;
@@ -61,12 +67,23 @@ export class LktResource {
     this.maxPageDig = new MaxPageDigValue(
       data.maxPageDig
     );
+    this.permDig = new PermDigValue(
+      data.permDig
+    );
+    this.modificationsDig = new ModificationsDigValue(
+      data.modificationsDig
+    );
     this.latestMaxPage = -1;
   }
 
   getLatestMaxPage(): number
   {
     return this.latestMaxPage;
+  }
+
+  getLatestPerms(): string[]
+  {
+    return this.latestPerms;
   }
 
   build(params: LktObject) {
@@ -121,7 +138,7 @@ export class LktResource {
         this.fetchStatus.start();
 
         return await axios(build as unknown as AxiosRequestConfig)
-          .then((response: AxiosResponse) => {
+          .then((response: AxiosResponse): HTTPResponse => {
             this.fetchStatus.stop();
 
             let r = this.returnsFullResponse.value ? response : response.data;
@@ -132,6 +149,17 @@ export class LktResource {
               this.latestMaxPage = -1;
             }
 
+            if (this.permDig.hasToDig()) {
+              this.latestPerms = this.permDig.dig(r);
+            } else {
+              this.latestPerms = undefined;
+            }
+
+            let modifications: LktObject = {};
+            if (this.modificationsDig.hasToDig()) {
+              modifications = this.modificationsDig.dig(r);
+            }
+
             if (this.returnsResponseDig.hasToDig()) {
               r = this.returnsResponseDig.dig(r);
             }
@@ -139,7 +167,7 @@ export class LktResource {
             if (this.onSuccess.hasActionDefined()) {
               return this.onSuccess.run(r);
             }
-            return r;
+            return {data: r, maxPage: this.latestMaxPage, perms: this.latestPerms, modifications, response};
           })
           .catch((error) => {
             this.fetchStatus.stop();

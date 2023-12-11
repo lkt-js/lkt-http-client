@@ -20,4 +20,6 @@ export type ResourceData = {
   returnsResponseDig?: string;
   onSuccess?: Function;
   maxPageDig?: string;
+  permDig?: string;
+  modificationsDig?: string;
 };

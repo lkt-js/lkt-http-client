@@ -1,1 +1,1 @@
-export declare type StatusValidator = (status: number) => boolean;
+export type StatusValidator = (status: number) => boolean;
