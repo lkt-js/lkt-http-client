@@ -164,8 +164,12 @@ export class LktResource {
                         //@ts-ignore
                         window.download(r.data, fileName);
 
+                        let perms: string[] = [];
+
+                        const R = {data: r.data, maxPage: 0, perms, modifications: {}, response: r};
+
                         if (this.onSuccess.hasActionDefined()) {
-                            return this.onSuccess.run(r);
+                            return this.onSuccess.run(R);
                         }
                         return r;
                     })
