@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {successPromise} from 'lkt-control-tools';
 import {trim} from 'lkt-string-tools';
 import {LktObject} from 'lkt-ts-interfaces';
@@ -130,23 +130,27 @@ export class LktResource {
 
                         if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
 
-                        const R = {data: r, maxPage, perms, modifications, response};
+                        const R: HTTPResponse = {data: r, maxPage, perms, modifications, response, success: true, httpStatus: response.status};
 
                         if (this.onSuccess.hasActionDefined()) {
                             return this.onSuccess.run(R);
                         }
                         return R;
                     })
-                    .catch((error) => {
+                    .catch((error: AxiosError) => {
                         this.fetchStatus.stop();
-                        return Promise.reject(new Error(error));
+                        let perms: string[] = [];
+                        const R: HTTPResponse = {data: {
+                            status: error.response.status
+                            }, maxPage: -1, perms, modifications: {}, response: error, success: false, httpStatus: error.response.status};
+                        return R;
                     });
 
             case 'download':
             case 'open':
                 return axios
                     .get(build.url, {responseType: 'blob'})
-                    .then((r) => {
+                    .then((r: AxiosResponse) => {
                         const contentDisposition = r.headers['content-disposition'];
                         let fileName = '';
                         if (contentDisposition) {
@@ -166,7 +170,7 @@ export class LktResource {
 
                         let perms: string[] = [];
 
-                        const R = {data: r.data, maxPage: 0, perms, modifications: {}, response: r};
+                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, response: r, success: true, httpStatus: r.status};
 
                         if (this.onSuccess.hasActionDefined()) {
                             return this.onSuccess.run(R);

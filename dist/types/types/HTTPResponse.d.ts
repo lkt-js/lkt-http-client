@@ -1,9 +1,11 @@
 import { LktObject } from 'lkt-ts-interfaces';
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 export type HTTPResponse = {
     data: LktObject;
     maxPage: number;
     perms: string[];
     modifications: LktObject;
-    response: AxiosResponse;
+    response: AxiosResponse | AxiosError;
+    success: boolean;
+    httpStatus: number;
 };

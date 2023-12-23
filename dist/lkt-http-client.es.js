@@ -1,9 +1,9 @@
 var V = Object.defineProperty;
-var x = (t, e, r) => e in t ? V(t, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : t[e] = r;
-var s = (t, e, r) => (x(t, typeof e != "symbol" ? e + "" : e, r), r);
+var x = (t, e, i) => e in t ? V(t, e, { enumerable: !0, configurable: !0, writable: !0, value: i }) : t[e] = i;
+var s = (t, e, i) => (x(t, typeof e != "symbol" ? e + "" : e, i), i);
 import D from "axios";
 import { successPromise as E } from "lkt-control-tools";
-import { toString as b, fill as y, trim as w } from "lkt-string-tools";
+import { toString as b, fill as y, trim as R } from "lkt-string-tools";
 import { fetchInObject as v } from "lkt-object-tools";
 class O {
   constructor(e) {
@@ -19,12 +19,12 @@ class S {
     this.value = e;
   }
 }
-class R {
-  constructor(e, r, i) {
+class w {
+  constructor(e, i, r) {
     s(this, "name");
     s(this, "url");
     s(this, "auth");
-    this.name = new S(e), this.url = new O(r), this.auth = i;
+    this.name = new S(e), this.url = new O(i), this.auth = r;
   }
 }
 class U {
@@ -35,11 +35,11 @@ class U {
     this.value[e.name.value] = e;
   }
   get(e) {
-    if (this.value[e] instanceof R)
+    if (this.value[e] instanceof w)
       return this.value[e];
   }
   exists(e) {
-    return this.value[e] instanceof R;
+    return this.value[e] instanceof w;
   }
 }
 class F {
@@ -67,11 +67,11 @@ class h {
 s(h, "router"), s(h, "DEFAULT_ENVIRONMENT");
 const H = (t) => {
   const e = [];
-  return Object.keys(t).forEach((i) => {
-    Array.isArray(t[i]) ? t[i].length > 0 && e.push(`${i}=${JSON.stringify(t[i])}`) : e.push(`${i}=${t[i]}`);
+  return Object.keys(t).forEach((r) => {
+    Array.isArray(t[r]) ? t[r].length > 0 && e.push(`${r}=${JSON.stringify(t[r])}`) : e.push(`${r}=${t[r]}`);
   }), e.join("&");
 }, ie = (t) => d().resources.exists(t), d = () => (h.router instanceof h || (h.router = new h()), h.router);
-class j {
+class _ {
   constructor(e) {
     s(this, "value");
     e || (e = "json"), this.value = e;
@@ -80,7 +80,7 @@ class j {
     return this.value === "json";
   }
 }
-class _ {
+class $ {
   constructor(e) {
     s(this, "value");
     e || (e = "default"), this.value = e;
@@ -94,7 +94,7 @@ class _ {
     return e && e.auth ? e.auth : {};
   }
 }
-class $ {
+class j {
   constructor(e) {
     s(this, "value");
     e || (e = !1), this.value = e;
@@ -165,10 +165,10 @@ class L {
     s(this, "value");
     e || (e = {}), this.value = e;
   }
-  prepareValues(e, r = !1) {
+  prepareValues(e, i = !1) {
     e || (e = {});
-    const i = Object.keys(this.value), a = r ? new window.FormData() : {};
-    return i.forEach((n) => {
+    const r = Object.keys(this.value), a = i ? new window.FormData() : {};
+    return r.forEach((n) => {
       const u = this.value[n].default || null;
       if (e[n] || u) {
         const m = this.value[n].renameTo || null || n;
@@ -193,15 +193,15 @@ class L {
                 `Param '${n}' must be a valid object. '${o}' received`
               );
           }
-        r ? a.append(m, o) : a[m] = o;
+        i ? a.append(m, o) : a[m] = o;
       }
     }), a;
   }
-  replaceUrlValues(e, r) {
-    const i = this.prepareValues(r, !1);
+  replaceUrlValues(e, i) {
+    const r = this.prepareValues(i, !1);
     return y(
       e,
-      i,
+      r,
       p.RESOURCE_PARAM_LEFT_SEPARATOR,
       p.RESOURCE_PARAM_RIGHT_SEPARATOR
     );
@@ -258,14 +258,14 @@ class B {
   }
 }
 class K {
-  constructor(e, r, i, a, n, u) {
+  constructor(e, i, r, a, n, u) {
     s(this, "url");
     s(this, "method");
     s(this, "data");
     s(this, "auth");
     s(this, "statusValidator");
     s(this, "headers");
-    this.url = e, this.method = r, this.data = i, this.auth = a, this.statusValidator = n, this.headers = u;
+    this.url = e, this.method = i, this.data = r, this.auth = a, this.statusValidator = n, this.headers = u;
   }
 }
 class W {
@@ -310,18 +310,18 @@ class T {
     s(this, "maxPageDig");
     s(this, "permDig");
     s(this, "modificationsDig");
-    this.data = e, this.url = new I(e.url), this.name = new S(e.name), this.method = new N(e.method), this.environment = new _(e.environment), this.dataType = new j(e.dataType), this.params = new L(e.params), this.isFileUpload = new $(e.isFileUpload), this.validStatuses = new B(e.validStatuses), this.fetchStatus = new M(), this.onSuccess = new G(e.onSuccess), this.returnsFullResponse = new J(e.returnsFullResponse), this.returnsResponseDig = new q(e.digToData), this.maxPageDig = new C(e.digToMaxPage), this.permDig = new W(e.digToPerms), this.modificationsDig = new z(e.digToModifications);
+    this.data = e, this.url = new I(e.url), this.name = new S(e.name), this.method = new N(e.method), this.environment = new $(e.environment), this.dataType = new _(e.dataType), this.params = new L(e.params), this.isFileUpload = new j(e.isFileUpload), this.validStatuses = new B(e.validStatuses), this.fetchStatus = new M(), this.onSuccess = new G(e.onSuccess), this.returnsFullResponse = new J(e.returnsFullResponse), this.returnsResponseDig = new q(e.digToData), this.maxPageDig = new C(e.digToMaxPage), this.permDig = new W(e.digToPerms), this.modificationsDig = new z(e.digToModifications);
   }
   build(e) {
-    let r = this.params.prepareValues(
+    let i = this.params.prepareValues(
       e,
       this.isFileUpload.value
     );
-    const i = this.url.prepare(this.environment.getUrl());
-    let a = this.params.replaceUrlValues(i, e);
+    const r = this.url.prepare(this.environment.getUrl());
+    let a = this.params.replaceUrlValues(r, e);
     if (this.method.hasUrlParams()) {
-      const l = H(r);
-      l.length > 0 && (a = [a, l].join("?")), r = {};
+      const l = H(i);
+      l.length > 0 && (a = [a, l].join("?")), i = {};
     }
     const n = (l) => this.validStatuses.includes(l);
     let u;
@@ -330,51 +330,57 @@ class T {
     }), new K(
       a,
       this.method.toPrimitive(),
-      r,
+      i,
       this.environment.getAuth(),
       n,
       u
     );
   }
   async call(e) {
-    const r = this.build(e);
+    const i = this.build(e);
     if (this.fetchStatus.inProgress())
       return E();
-    switch (r.method) {
+    switch (i.method) {
       case "get":
       case "post":
       case "put":
       case "delete":
-        return this.fetchStatus.start(), await D(r).then((i) => {
+        return this.fetchStatus.start(), await D(i).then((r) => {
           this.fetchStatus.stop();
-          let a = this.returnsFullResponse.value ? i : i.data, n = -1;
+          let a = this.returnsFullResponse.value ? r : r.data, n = -1;
           this.maxPageDig.hasToDig() && (n = this.maxPageDig.dig(a));
           let u;
           this.permDig.hasToDig() && (u = this.permDig.dig(a));
           let l = {};
           this.modificationsDig.hasToDig() && (l = this.modificationsDig.dig(a)), this.returnsResponseDig.hasToDig() && (a = this.returnsResponseDig.dig(a));
-          const m = { data: a, maxPage: n, perms: u, modifications: l, response: i };
+          const m = { data: a, maxPage: n, perms: u, modifications: l, response: r, success: !0, httpStatus: r.status };
           return this.onSuccess.hasActionDefined() ? this.onSuccess.run(m) : m;
-        }).catch((i) => (this.fetchStatus.stop(), Promise.reject(new Error(i))));
+        }).catch((r) => {
+          this.fetchStatus.stop();
+          let a = [];
+          return { data: {
+            status: r.response.status
+          }, maxPage: -1, perms: a, modifications: {}, response: r, success: !1, httpStatus: r.response.status };
+        });
       case "download":
       case "open":
-        return D.get(r.url, { responseType: "blob" }).then((i) => {
-          const a = i.headers["content-disposition"];
+        return D.get(i.url, { responseType: "blob" }).then((r) => {
+          const a = r.headers["content-disposition"];
           let n = "";
           a && a.split(";").forEach((o) => {
             const c = o.split("=");
-            if (w(c[0]) === "filename") {
-              let g = w(c[1]);
-              g = w(g, '"'), n = g;
+            if (R(c[0]) === "filename") {
+              let g = R(c[1]);
+              g = R(g, '"'), n = g;
             }
-          }), window.download(i.data, n);
+          }), window.download(r.data, n);
           let u = [];
-          const l = { data: i.data, maxPage: 0, perms: u, modifications: {}, response: i };
-          return this.onSuccess.hasActionDefined() ? this.onSuccess.run(l) : i;
-        }).catch((i) => i);
+          const l = { data: r.data, maxPage: 0, perms: u, modifications: {}, response: r, success: !0, httpStatus: r.status };
+          return this.onSuccess.hasActionDefined() ? this.onSuccess.run(l) : r;
+        }).catch((r) => r);
       default:
         throw new Error(
-          `Error: Invalid method in call ${JSON.stringify(r)}`
+          `Error: Invalid method in call ${JSON.stringify(i)}`
         );
     }
   }
@@ -401,7 +407,7 @@ const ae = (t) => {
   const e = new T(t);
   return d().resources.add(e), A(t.name);
 }, Q = (t) => {
-  const e = new R(t.name, t.url, t.auth);
+  const e = new w(t.name, t.url, t.auth);
   return d().environments.add(e), P(t.name);
 }, A = (t) => d().resources.get(t), P = (t) => d().environments.get(t), X = async (t = "", e = {}) => await A(t).call(e);
 class Y {
@@ -421,8 +427,8 @@ class Z {
     s(this, "value");
     e || (e = {}), this.value = e;
   }
-  setParam(e, r) {
-    this.value[e] = r;
+  setParam(e, i) {
+    this.value[e] = i;
   }
   getParams() {
     return this.value;
@@ -437,12 +443,12 @@ class he {
   isCallable() {
     return this.resource.exists();
   }
-  setParam(e, r) {
-    this.params.setParam(e, r);
+  setParam(e, i) {
+    this.params.setParam(e, i);
   }
   setParams(e) {
-    Object.keys(e).forEach((r) => {
-      this.params.setParam(r, e[r]);
+    Object.keys(e).forEach((i) => {
+      this.params.setParam(i, e[i]);
     });
   }
   async call() {
