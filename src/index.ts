@@ -18,6 +18,7 @@ export {
   getHTTPResource,
 } from './functions/startup-functions';
 export type { ResourceCallerConfig } from './types/ResourceCallerConfig';
+export type { HTTPResponse } from './types/HTTPResponse';
 
 const LktHttpClient = {
   install: (app: any, options: LktObject) => {
