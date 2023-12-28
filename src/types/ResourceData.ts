@@ -18,6 +18,7 @@ export type ResourceData = {
   params?: ResourceParamStack;
   returnsFullResponse?: boolean;
   onSuccess?: Function;
+  mapData?: Function;
   digToData?: string;
   digToMaxPage?: string;
   digToPerms?: string;

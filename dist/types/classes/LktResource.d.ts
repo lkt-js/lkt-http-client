@@ -14,6 +14,7 @@ export declare class LktResource {
     private validStatuses;
     private fetchStatus;
     private onSuccess;
+    private mapData;
     private returnsFullResponse;
     private returnsResponseDig;
     private maxPageDig;

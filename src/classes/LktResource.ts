@@ -22,6 +22,7 @@ import {ResourceBuild} from './ResourceBuild';
 import {PermDigValue} from "../value-objects/PermDigValue";
 import {ModificationsDigValue} from "../value-objects/ModificationsDigValue";
 import {HTTPResponse} from "../types/HTTPResponse";
+import {MapDataValue} from "../value-objects/MapDataValue";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -36,6 +37,7 @@ export class LktResource {
     private validStatuses: ValidResponseStatuses;
     private fetchStatus: ResourceFetchStatus;
     private onSuccess: ResponseSuccessHookValue;
+    private mapData: MapDataValue;
     private returnsFullResponse: ReturnsFullResponseValue;
     private returnsResponseDig: ReturnsResponseDigValue;
     private maxPageDig: MaxPageDigValue;
@@ -55,6 +57,7 @@ export class LktResource {
         this.validStatuses = new ValidResponseStatuses(data.validStatuses);
         this.fetchStatus = new ResourceFetchStatus();
         this.onSuccess = new ResponseSuccessHookValue(data.onSuccess);
+        this.mapData = new MapDataValue(data.mapData);
         this.returnsFullResponse = new ReturnsFullResponseValue(data.returnsFullResponse);
         this.returnsResponseDig = new ReturnsResponseDigValue(data.digToData);
         this.maxPageDig = new MaxPageDigValue(data.digToMaxPage);
@@ -129,6 +132,8 @@ export class LktResource {
                         if (this.modificationsDig.hasToDig()) modifications = this.modificationsDig.dig(r);
 
                         if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
+
+                        if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
 
                         const R: HTTPResponse = {data: r, maxPage, perms, modifications, response, success: true, httpStatus: response.status};
 
