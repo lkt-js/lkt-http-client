@@ -21,4 +21,5 @@ export type ResourceData = {
     digToMaxPage?: string;
     digToPerms?: string;
     digToModifications?: string;
+    digToAutoReloadId?: string;
 };

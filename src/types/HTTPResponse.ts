@@ -9,4 +9,5 @@ export type HTTPResponse = {
   response: AxiosResponse | AxiosError;
   success: boolean;
   httpStatus: number;
+  autoReloadId: number|string;
 };

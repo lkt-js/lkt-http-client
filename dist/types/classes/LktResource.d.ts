@@ -20,6 +20,7 @@ export declare class LktResource {
     private maxPageDig;
     private permDig;
     private modificationsDig;
+    private digToAutoReloadId;
     constructor(data: ResourceData);
     build(params: LktObject): ResourceBuild;
     call(params: LktObject): Promise<any>;

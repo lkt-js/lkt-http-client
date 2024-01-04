@@ -23,6 +23,7 @@ import {PermDigValue} from "../value-objects/PermDigValue";
 import {ModificationsDigValue} from "../value-objects/ModificationsDigValue";
 import {HTTPResponse} from "../types/HTTPResponse";
 import {MapDataValue} from "../value-objects/MapDataValue";
+import {DigToAutoReloadIdValue} from "../value-objects/DigToAutoReloadIdValue";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -43,6 +44,7 @@ export class LktResource {
     private maxPageDig: MaxPageDigValue;
     private permDig: PermDigValue;
     private modificationsDig: ModificationsDigValue;
+    private digToAutoReloadId: DigToAutoReloadIdValue;
 
     constructor(data: ResourceData) {
         this.data = data;
@@ -63,6 +65,7 @@ export class LktResource {
         this.maxPageDig = new MaxPageDigValue(data.digToMaxPage);
         this.permDig = new PermDigValue(data.digToPerms);
         this.modificationsDig = new ModificationsDigValue(data.digToModifications);
+        this.digToAutoReloadId = new DigToAutoReloadIdValue(data.digToAutoReloadId);
     }
 
     build(params: LktObject) {
@@ -76,20 +79,15 @@ export class LktResource {
 
         if (this.method.hasUrlParams()) {
             const stringParams = paramsToString(data);
-            if (stringParams.length > 0) {
-                link = [link, stringParams].join('?');
-            }
+            if (stringParams.length > 0) link = [link, stringParams].join('?');
             data = {};
         }
 
-        const statusValidator = (status: number) =>
-            this.validStatuses.includes(status);
+        const statusValidator = (status: number) => this.validStatuses.includes(status);
 
         let headers = undefined;
         if (this.isFileUpload.value) {
-            headers = {
-                'Content-Type': 'multipart/form-data',
-            };
+            headers = {'Content-Type': 'multipart/form-data'};
         }
 
         return new ResourceBuild(
@@ -105,9 +103,7 @@ export class LktResource {
     async call(params: LktObject): Promise<any> {
         const build = this.build(params);
 
-        if (this.fetchStatus.inProgress()) {
-            return successPromise();
-        }
+        if (this.fetchStatus.inProgress()) return successPromise();
 
         switch (build.method) {
             case 'get':
@@ -131,15 +127,16 @@ export class LktResource {
                         let modifications: LktObject = {};
                         if (this.modificationsDig.hasToDig()) modifications = this.modificationsDig.dig(r);
 
+                        let autoReloadId: number|string = '';
+                        if (this.digToAutoReloadId.hasToDig()) autoReloadId = this.digToAutoReloadId.dig(r);
+
                         if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
 
                         if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
 
-                        const R: HTTPResponse = {data: r, maxPage, perms, modifications, response, success: true, httpStatus: response.status};
+                        const R: HTTPResponse = {data: r, maxPage, perms, modifications, response, success: true, httpStatus: response.status, autoReloadId};
 
-                        if (this.onSuccess.hasActionDefined()) {
-                            return this.onSuccess.run(R);
-                        }
+                        if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return R;
                     })
                     .catch((error: AxiosError) => {
@@ -147,7 +144,7 @@ export class LktResource {
                         let perms: string[] = [];
                         const R: HTTPResponse = {data: {
                             status: error.response.status
-                            }, maxPage: -1, perms, modifications: {}, response: error, success: false, httpStatus: error.response.status};
+                            }, maxPage: -1, perms, modifications: {}, response: error, success: false, httpStatus: error.response.status, autoReloadId: 0};
                         return R;
                     });
 
@@ -175,11 +172,9 @@ export class LktResource {
 
                         let perms: string[] = [];
 
-                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, response: r, success: true, httpStatus: r.status};
+                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0};
 
-                        if (this.onSuccess.hasActionDefined()) {
-                            return this.onSuccess.run(R);
-                        }
+                        if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return r;
                     })
                     .catch((error) => {
