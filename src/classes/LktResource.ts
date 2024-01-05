@@ -150,7 +150,7 @@ export class LktResource {
 
             case 'download':
             case 'open':
-                return axios
+                return await axios
                     .get(build.url, {responseType: 'blob'})
                     .then((r: AxiosResponse) => {
                         const contentDisposition = r.headers['content-disposition'];
@@ -175,7 +175,7 @@ export class LktResource {
                         const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0};
 
                         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
-                        return r;
+                        return R;
                     })
                     .catch((error) => {
                         return error;

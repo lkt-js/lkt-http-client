@@ -390,7 +390,7 @@ class w {
         });
       case "download":
       case "open":
-        return P.get(i.url, { responseType: "blob" }).then((r) => {
+        return await P.get(i.url, { responseType: "blob" }).then((r) => {
           const a = r.headers["content-disposition"];
           let n = "";
           a && a.split(";").forEach((o) => {
@@ -402,7 +402,7 @@ class w {
           }), window.download(r.data, n);
           let u = [];
           const l = { data: r.data, maxPage: 0, perms: u, modifications: {}, response: r, success: !0, httpStatus: r.status, autoReloadId: 0 };
-          return this.onSuccess.hasActionDefined() ? this.onSuccess.run(l) : r;
+          return this.onSuccess.hasActionDefined() ? this.onSuccess.run(l) : l;
         }).catch((r) => r);
       default:
         throw new Error(
