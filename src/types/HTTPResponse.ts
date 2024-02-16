@@ -2,7 +2,7 @@ import {LktObject} from 'lkt-ts-interfaces';
 import {AxiosError, AxiosResponse} from "axios";
 
 export type HTTPResponse = {
-  data: LktObject;
+  data: LktObject | any[];
   maxPage: number;
   perms: string[];
   modifications: LktObject;
@@ -10,4 +10,5 @@ export type HTTPResponse = {
   success: boolean;
   httpStatus: number;
   autoReloadId: number|string;
+  custom: LktObject;
 };

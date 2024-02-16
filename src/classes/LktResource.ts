@@ -24,6 +24,7 @@ import {ModificationsDigValue} from "../value-objects/ModificationsDigValue";
 import {HTTPResponse} from "../types/HTTPResponse";
 import {MapDataValue} from "../value-objects/MapDataValue";
 import {DigToAutoReloadIdValue} from "../value-objects/DigToAutoReloadIdValue";
+import {CustomDataValue} from "../value-objects/CustomDataValue";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -45,6 +46,7 @@ export class LktResource {
     private permDig: PermDigValue;
     private modificationsDig: ModificationsDigValue;
     private digToAutoReloadId: DigToAutoReloadIdValue;
+    private custom: CustomDataValue;
 
     constructor(data: ResourceData) {
         this.data = data;
@@ -66,6 +68,7 @@ export class LktResource {
         this.permDig = new PermDigValue(data.digToPerms);
         this.modificationsDig = new ModificationsDigValue(data.digToModifications);
         this.digToAutoReloadId = new DigToAutoReloadIdValue(data.digToAutoReloadId);
+        this.custom = new CustomDataValue(data.custom);
     }
 
     build(params: LktObject) {
@@ -124,6 +127,9 @@ export class LktResource {
                         let perms = undefined;
                         if (this.permDig.hasToDig()) perms = this.permDig.dig(r);
 
+                        let custom = {};
+                        if (this.custom.hasToDig()) custom = this.custom.dig(r);
+
                         let modifications: LktObject = {};
                         if (this.modificationsDig.hasToDig()) modifications = this.modificationsDig.dig(r);
 
@@ -134,7 +140,7 @@ export class LktResource {
 
                         if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
 
-                        const R: HTTPResponse = {data: r, maxPage, perms, modifications, response, success: true, httpStatus: response.status, autoReloadId};
+                        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId};
 
                         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return R;
@@ -144,7 +150,7 @@ export class LktResource {
                         let perms: string[] = [];
                         const R: HTTPResponse = {data: {
                             status: error.response.status
-                            }, maxPage: -1, perms, modifications: {}, response: error, success: false, httpStatus: error.response.status, autoReloadId: 0};
+                            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: error.response.status, autoReloadId: 0};
                         return R;
                     });
 
@@ -172,7 +178,7 @@ export class LktResource {
 
                         let perms: string[] = [];
 
-                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0};
+                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, custom: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0};
 
                         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return R;

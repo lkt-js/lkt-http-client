@@ -21,6 +21,7 @@ export declare class LktResource {
     private permDig;
     private modificationsDig;
     private digToAutoReloadId;
+    private custom;
     constructor(data: ResourceData);
     build(params: LktObject): ResourceBuild;
     call(params: LktObject): Promise<any>;
