@@ -1,7 +1,7 @@
 export class ValidResponseStatuses {
     public readonly value: number[];
 
-    constructor(value: number[]) {
+    constructor(value: number[]|undefined) {
         if (!value) {
             value = [200, 201, 202];
         }

@@ -38,7 +38,7 @@ export const createHTTPDownloadResource = (data: ResourceData) => {
  *
  * @param data
  */
-export const createHTTPResource = (data: ResourceData): LktResource => {
+export const createHTTPResource = (data: ResourceData): LktResource|undefined => {
   const r = new LktResource(data);
   getRouter().resources.add(r);
   return getHTTPResource(data.name);
@@ -50,7 +50,7 @@ export const createHTTPResource = (data: ResourceData): LktResource => {
  */
 export const createHTTPEnvironment = (
   data: EnvironmentData
-): LktEnvironment => {
+): LktEnvironment|undefined => {
   const r = new LktEnvironment(data.name, data.url, data.auth);
   getRouter().environments.add(r);
   return getHTTPEnvironment(data.name);

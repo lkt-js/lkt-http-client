@@ -15,9 +15,11 @@ export class ResourceParamsValue {
   }
 
   prepareValues(values?: LktObject, asFormData: boolean = false) {
-    if (!values) {
+    if (typeof values === 'undefined') {
       values = {};
     }
+
+    let _Values: LktObject = values;
 
     const keys = Object.keys(this.value);
     //@ts-ignore
@@ -25,10 +27,13 @@ export class ResourceParamsValue {
 
     keys.forEach((key) => {
       const defaultValue = this.value[key].default || null;
-      if (values[key] || defaultValue) {
+      if (_Values[key] || defaultValue) {
         const rename = this.value[key].renameTo || null;
         const storeKey = rename || key;
-        let value = values[key] || defaultValue;
+        let value = defaultValue;
+        if (typeof _Values[key] !== 'undefined') {
+          value = _Values[key];
+        }
         const type = this.value[key].type || null;
 
         if (type && value !== null && typeof value !== undefined) {

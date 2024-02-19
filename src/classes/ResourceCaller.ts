@@ -7,7 +7,7 @@ import { ResourceCallDataValue } from '../value-objects/ResourceCallDataValue';
 
 export class ResourceCaller {
   resource: ResourceAliasValue;
-  params?: ResourceCallDataValue;
+  params: ResourceCallDataValue;
 
   constructor(config: ResourceCallerConfig) {
     this.resource = new ResourceAliasValue(config.resource);
@@ -33,6 +33,6 @@ export class ResourceCaller {
       return await this.resource.call(this.params.getParams());
     }
 
-    return await successPromise();
+    return await successPromise(undefined, undefined);
   }
 }

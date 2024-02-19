@@ -12,5 +12,5 @@ export class LktRouter {
     this.environments = new EnvironmentManager();
   }
 
-  static DEFAULT_ENVIRONMENT: string = undefined;
+  static DEFAULT_ENVIRONMENT: string = '';
 }

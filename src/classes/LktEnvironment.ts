@@ -5,7 +5,7 @@ import { ResourceNameValue } from '../value-objects/ResourceNameValue';
 export class LktEnvironment {
   name: ResourceNameValue;
   url: EnvironmentUrlValue;
-  auth: UserAuth;
+  auth?: UserAuth;
 
   constructor(name: string, url: string, auth?: UserAuth) {
     this.name = new ResourceNameValue(name);

@@ -6,7 +6,7 @@ export type HTTPResponse = {
   maxPage: number;
   perms: string[];
   modifications: LktObject;
-  response: AxiosResponse | AxiosError;
+  response: AxiosResponse | AxiosError | undefined;
   success: boolean;
   httpStatus: number;
   autoReloadId: number|string;

@@ -88,7 +88,7 @@ export class LktResource {
 
         const statusValidator = (status: number) => this.validStatuses.includes(status);
 
-        let headers = undefined;
+        let headers:LktObject = {};
         if (this.isFileUpload.value) {
             headers = {'Content-Type': 'multipart/form-data'};
         }
@@ -106,7 +106,7 @@ export class LktResource {
     async call(params: LktObject): Promise<any> {
         const build = this.build(params);
 
-        if (this.fetchStatus.inProgress()) return successPromise();
+        if (this.fetchStatus.inProgress()) return successPromise(undefined, undefined);
 
         switch (build.method) {
             case 'get':
@@ -124,7 +124,7 @@ export class LktResource {
                         let maxPage = -1;
                         if (this.maxPageDig.hasToDig()) maxPage = this.maxPageDig.dig(r);
 
-                        let perms = undefined;
+                        let perms: string[] = [];
                         if (this.permDig.hasToDig()) perms = this.permDig.dig(r);
 
                         let custom = {};
@@ -149,8 +149,8 @@ export class LktResource {
                         this.fetchStatus.stop();
                         let perms: string[] = [];
                         const R: HTTPResponse = {data: {
-                            status: error.response.status
-                            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: error.response.status, autoReloadId: 0};
+                            status: typeof error.response === 'undefined' ? 500 : error.response.status
+                            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0};
                         return R;
                     });
 
