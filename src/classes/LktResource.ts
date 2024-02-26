@@ -163,7 +163,7 @@ export class LktResource {
                         let fileName = '';
                         if (contentDisposition) {
                             const contentDispositionAux = contentDisposition.split(';');
-                            contentDispositionAux.forEach((z) => {
+                            contentDispositionAux.forEach((z:string) => {
                                 const y = z.split('=');
                                 if (trim(y[0]) === 'filename') {
                                     let n = trim(y[1]);

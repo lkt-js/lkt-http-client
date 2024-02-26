@@ -1,4 +1,5 @@
 import { createHTTPEnvironment } from './functions/startup-functions';
+import { download } from "./functions/download";
 export { ResourceCaller } from './classes/ResourceCaller';
 export { existsHTTPResource } from './functions/helpers';
 export { getRouter } from './functions/helpers';
@@ -8,7 +9,7 @@ const LktHttpClient = {
     install: (app, options) => {
         createHTTPEnvironment({ name: 'default', url: '' });
         //@ts-ignore
-        window.download = require('downloadjs');
+        window.download = download;
     },
 };
 export default LktHttpClient;
