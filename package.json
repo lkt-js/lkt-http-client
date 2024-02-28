@@ -1,6 +1,6 @@
 {
   "name": "lkt-http-client",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "",
   "keywords": [
     "lkt",
@@ -16,7 +16,7 @@
     ".": {
       "import": "./dist/index.js"
     },
-    "./styles": "./build/style.css"
+    "./styles": "./dist/style.css"
   },
   "types": "./dist/index.d.ts",
   "files": ["dist/*"],

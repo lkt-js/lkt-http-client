@@ -51,7 +51,7 @@ export const createHTTPResource = (data: ResourceData): LktResource|undefined =>
 export const createHTTPEnvironment = (
   data: EnvironmentData
 ): LktEnvironment|undefined => {
-  const r = new LktEnvironment(data.name, data.url, data.auth);
+  const r = new LktEnvironment(data.name, data.url, data.auth, data.params, data.headers);
   getRouter().environments.add(r);
   return getHTTPEnvironment(data.name);
 };

@@ -1,9 +1,8 @@
 import { getHTTPEnvironment } from "../functions/startup-functions";
 export class EnvironmentValue {
     constructor(value) {
-        if (!value) {
+        if (!value)
             value = 'default';
-        }
         this.value = value;
     }
     getUrl() {
@@ -17,6 +16,20 @@ export class EnvironmentValue {
         const env = getHTTPEnvironment(this.value);
         if (env && env.auth) {
             return env.auth;
+        }
+        return {};
+    }
+    getParams() {
+        const env = getHTTPEnvironment(this.value);
+        if (env && env.params) {
+            return env.getParams();
+        }
+        return {};
+    }
+    getHeaders() {
+        const env = getHTTPEnvironment(this.value);
+        if (env && env.headers) {
+            return JSON.parse(JSON.stringify(env.headers));
         }
         return {};
     }

@@ -39,7 +39,7 @@ export const createHTTPResource = (data) => {
  * @param data
  */
 export const createHTTPEnvironment = (data) => {
-    const r = new LktEnvironment(data.name, data.url, data.auth);
+    const r = new LktEnvironment(data.name, data.url, data.auth, data.params, data.headers);
     getRouter().environments.add(r);
     return getHTTPEnvironment(data.name);
 };

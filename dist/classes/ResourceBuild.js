@@ -3,7 +3,8 @@ export class ResourceBuild {
         this.url = url;
         this.method = method;
         this.data = data;
-        this.auth = auth;
+        if (Object.keys(auth).length > 0)
+            this.auth = auth;
         this.statusValidator = statusValidator;
         this.headers = headers;
     }

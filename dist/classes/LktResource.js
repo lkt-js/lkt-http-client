@@ -21,6 +21,7 @@ import { ModificationsDigValue } from "../value-objects/ModificationsDigValue";
 import { MapDataValue } from "../value-objects/MapDataValue";
 import { DigToAutoReloadIdValue } from "../value-objects/DigToAutoReloadIdValue";
 import { CustomDataValue } from "../value-objects/CustomDataValue";
+import { mergeObjects } from "lkt-object-tools";
 export class LktResource {
     constructor(data) {
         this.data = data;
@@ -44,9 +45,11 @@ export class LktResource {
         this.custom = new CustomDataValue(data.custom);
     }
     build(params) {
-        let data = this.params.prepareValues(params, this.isFileUpload.value);
+        let baseParams = this.environment.getParams();
+        let customParams = mergeObjects(baseParams, params);
+        let data = this.params.prepareValues(customParams, this.isFileUpload.value, baseParams);
         const url = this.url.prepare(this.environment.getUrl());
-        let link = this.params.replaceUrlValues(url, params);
+        let link = this.params.replaceUrlValues(url, customParams);
         if (this.method.hasUrlParams()) {
             const stringParams = paramsToString(data);
             if (stringParams.length > 0)
@@ -54,9 +57,10 @@ export class LktResource {
             data = {};
         }
         const statusValidator = (status) => this.validStatuses.includes(status);
-        let headers = {};
+        let headers = {}, envHeaders = this.environment.getHeaders();
+        headers = mergeObjects(headers, envHeaders);
         if (this.isFileUpload.value) {
-            headers = { 'Content-Type': 'multipart/form-data' };
+            headers = mergeObjects(headers, { 'Content-Type': 'multipart/form-data' });
         }
         return new ResourceBuild(link, this.method.toPrimitive(), data, this.environment.getAuth(), statusValidator, headers);
     }
@@ -64,48 +68,27 @@ export class LktResource {
         const build = this.build(params);
         if (this.fetchStatus.inProgress())
             return successPromise(undefined, undefined);
+        const instance = axios.create({
+            timeout: 1000,
+            headers: build.headers
+        });
         switch (build.method) {
             case 'get':
+                this.fetchStatus.start();
+                return await instance.get(build.url, build)
+                    .then(this.parseResponse).catch(this.parseError);
             case 'post':
+                this.fetchStatus.start();
+                return await instance.post(build.url, build)
+                    .then(this.parseResponse).catch(this.parseError);
             case 'put':
+                this.fetchStatus.start();
+                return await instance.put(build.url, build)
+                    .then(this.parseResponse).catch(this.parseError);
             case 'delete':
                 this.fetchStatus.start();
-                return await axios(build)
-                    .then((response) => {
-                    this.fetchStatus.stop();
-                    let r = this.returnsFullResponse.value ? response : response.data;
-                    let maxPage = -1;
-                    if (this.maxPageDig.hasToDig())
-                        maxPage = this.maxPageDig.dig(r);
-                    let perms = [];
-                    if (this.permDig.hasToDig())
-                        perms = this.permDig.dig(r);
-                    let custom = {};
-                    if (this.custom.hasToDig())
-                        custom = this.custom.dig(r);
-                    let modifications = {};
-                    if (this.modificationsDig.hasToDig())
-                        modifications = this.modificationsDig.dig(r);
-                    let autoReloadId = '';
-                    if (this.digToAutoReloadId.hasToDig())
-                        autoReloadId = this.digToAutoReloadId.dig(r);
-                    if (this.returnsResponseDig.hasToDig())
-                        r = this.returnsResponseDig.dig(r);
-                    if (this.mapData.hasActionDefined())
-                        r = this.mapData.run(r);
-                    const R = { data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId };
-                    if (this.onSuccess.hasActionDefined())
-                        return this.onSuccess.run(R);
-                    return R;
-                })
-                    .catch((error) => {
-                    this.fetchStatus.stop();
-                    let perms = [];
-                    const R = { data: {
-                            status: typeof error.response === 'undefined' ? 500 : error.response.status
-                        }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0 };
-                    return R;
-                });
+                return await instance.delete(build.url, build)
+                    .then(this.parseResponse).catch(this.parseError);
             case 'download':
             case 'open':
                 return await axios
@@ -138,5 +121,40 @@ export class LktResource {
             default:
                 throw new Error(`Error: Invalid method in call ${JSON.stringify(build)}`);
         }
+    }
+    parseResponse(response) {
+        this.fetchStatus.stop();
+        let r = this.returnsFullResponse.value ? response : response.data;
+        let maxPage = -1;
+        if (this.maxPageDig.hasToDig())
+            maxPage = this.maxPageDig.dig(r);
+        let perms = [];
+        if (this.permDig.hasToDig())
+            perms = this.permDig.dig(r);
+        let custom = {};
+        if (this.custom.hasToDig())
+            custom = this.custom.dig(r);
+        let modifications = {};
+        if (this.modificationsDig.hasToDig())
+            modifications = this.modificationsDig.dig(r);
+        let autoReloadId = '';
+        if (this.digToAutoReloadId.hasToDig())
+            autoReloadId = this.digToAutoReloadId.dig(r);
+        if (this.returnsResponseDig.hasToDig())
+            r = this.returnsResponseDig.dig(r);
+        if (this.mapData.hasActionDefined())
+            r = this.mapData.run(r);
+        const R = { data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId };
+        if (this.onSuccess.hasActionDefined())
+            return this.onSuccess.run(R);
+        return R;
+    }
+    parseError(error) {
+        this.fetchStatus.stop();
+        let perms = [];
+        const R = { data: {
+                status: typeof error.response === 'undefined' ? 500 : error.response.status
+            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0 };
+        return R;
     }
 }

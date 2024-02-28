@@ -25,6 +25,7 @@ import {HTTPResponse} from "../types/HTTPResponse";
 import {MapDataValue} from "../value-objects/MapDataValue";
 import {DigToAutoReloadIdValue} from "../value-objects/DigToAutoReloadIdValue";
 import {CustomDataValue} from "../value-objects/CustomDataValue";
+import {mergeObjects} from "lkt-object-tools";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -72,13 +73,18 @@ export class LktResource {
     }
 
     build(params: LktObject) {
+
+        let baseParams = this.environment.getParams();
+        let customParams = mergeObjects(baseParams, params);
+
         let data: LktObject = this.params.prepareValues(
-            params,
-            this.isFileUpload.value
+            customParams,
+            this.isFileUpload.value,
+            baseParams
         );
 
         const url = this.url.prepare(this.environment.getUrl());
-        let link = this.params.replaceUrlValues(url, params);
+        let link = this.params.replaceUrlValues(url, customParams);
 
         if (this.method.hasUrlParams()) {
             const stringParams = paramsToString(data);
@@ -88,9 +94,13 @@ export class LktResource {
 
         const statusValidator = (status: number) => this.validStatuses.includes(status);
 
-        let headers:LktObject = {};
+        let headers:LktObject = {},
+            envHeaders = this.environment.getHeaders();
+
+        headers = mergeObjects(headers, envHeaders);
+
         if (this.isFileUpload.value) {
-            headers = {'Content-Type': 'multipart/form-data'};
+            headers = mergeObjects(headers, {'Content-Type': 'multipart/form-data'});
         }
 
         return new ResourceBuild(
@@ -108,51 +118,32 @@ export class LktResource {
 
         if (this.fetchStatus.inProgress()) return successPromise(undefined, undefined);
 
+        const instance = axios.create({
+            timeout: 1000,
+            headers: build.headers
+        });
+
         switch (build.method) {
             case 'get':
+                this.fetchStatus.start();
+                return await instance.get(build.url, build as unknown as AxiosRequestConfig)
+                    .then(this.parseResponse).catch(this.parseError);
+
             case 'post':
+                this.fetchStatus.start();
+                return await instance.post(build.url, build as unknown as AxiosRequestConfig)
+                    .then(this.parseResponse).catch(this.parseError);
+
             case 'put':
+                this.fetchStatus.start();
+                return await instance.put(build.url, build as unknown as AxiosRequestConfig)
+                    .then(this.parseResponse).catch(this.parseError);
+
             case 'delete':
                 this.fetchStatus.start();
 
-                return await axios(build as unknown as AxiosRequestConfig)
-                    .then((response: AxiosResponse): HTTPResponse => {
-                        this.fetchStatus.stop();
-
-                        let r = this.returnsFullResponse.value ? response : response.data;
-
-                        let maxPage = -1;
-                        if (this.maxPageDig.hasToDig()) maxPage = this.maxPageDig.dig(r);
-
-                        let perms: string[] = [];
-                        if (this.permDig.hasToDig()) perms = this.permDig.dig(r);
-
-                        let custom = {};
-                        if (this.custom.hasToDig()) custom = this.custom.dig(r);
-
-                        let modifications: LktObject = {};
-                        if (this.modificationsDig.hasToDig()) modifications = this.modificationsDig.dig(r);
-
-                        let autoReloadId: number|string = '';
-                        if (this.digToAutoReloadId.hasToDig()) autoReloadId = this.digToAutoReloadId.dig(r);
-
-                        if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
-
-                        if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
-
-                        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId};
-
-                        if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
-                        return R;
-                    })
-                    .catch((error: AxiosError) => {
-                        this.fetchStatus.stop();
-                        let perms: string[] = [];
-                        const R: HTTPResponse = {data: {
-                            status: typeof error.response === 'undefined' ? 500 : error.response.status
-                            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0};
-                        return R;
-                    });
+                return await instance.delete(build.url, build as unknown as AxiosRequestConfig)
+                    .then(this.parseResponse).catch(this.parseError);
 
             case 'download':
             case 'open':
@@ -192,5 +183,44 @@ export class LktResource {
                     `Error: Invalid method in call ${JSON.stringify(build)}`
                 );
         }
+    }
+
+    parseResponse(response: AxiosResponse): HTTPResponse {
+        this.fetchStatus.stop();
+
+        let r = this.returnsFullResponse.value ? response : response.data;
+
+        let maxPage = -1;
+        if (this.maxPageDig.hasToDig()) maxPage = this.maxPageDig.dig(r);
+
+        let perms: string[] = [];
+        if (this.permDig.hasToDig()) perms = this.permDig.dig(r);
+
+        let custom = {};
+        if (this.custom.hasToDig()) custom = this.custom.dig(r);
+
+        let modifications: LktObject = {};
+        if (this.modificationsDig.hasToDig()) modifications = this.modificationsDig.dig(r);
+
+        let autoReloadId: number|string = '';
+        if (this.digToAutoReloadId.hasToDig()) autoReloadId = this.digToAutoReloadId.dig(r);
+
+        if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
+
+        if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
+
+        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId};
+
+        if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
+        return R;
+    }
+
+    parseError(error: AxiosError): HTTPResponse {
+        this.fetchStatus.stop();
+        let perms: string[] = [];
+        const R: HTTPResponse = {data: {
+                status: typeof error.response === 'undefined' ? 500 : error.response.status
+            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0};
+        return R;
     }
 }

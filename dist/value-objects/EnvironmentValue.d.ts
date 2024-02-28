@@ -4,4 +4,6 @@ export declare class EnvironmentValue {
     constructor(value?: string);
     getUrl(): string;
     getAuth(): UserAuth;
+    getParams(): UserAuth;
+    getHeaders(): UserAuth;
 }

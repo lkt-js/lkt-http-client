@@ -1,7 +1,9 @@
+import { AxiosError, AxiosResponse } from 'axios';
 import { LktObject } from 'lkt-ts-interfaces';
 import { ResourceData } from '../types/ResourceData';
 import { ResourceNameValue } from '../value-objects/ResourceNameValue';
 import { ResourceBuild } from './ResourceBuild';
+import { HTTPResponse } from "../types/HTTPResponse";
 export declare class LktResource {
     private readonly data;
     private url;
@@ -25,4 +27,6 @@ export declare class LktResource {
     constructor(data: ResourceData);
     build(params: LktObject): ResourceBuild;
     call(params: LktObject): Promise<any>;
+    parseResponse(response: AxiosResponse): HTTPResponse;
+    parseError(error: AxiosError): HTTPResponse;
 }

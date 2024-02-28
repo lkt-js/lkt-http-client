@@ -7,10 +7,11 @@ export class ResourceParamsValue {
         }
         this.value = value;
     }
-    prepareValues(values, asFormData = false) {
-        if (typeof values === 'undefined') {
+    prepareValues(values, asFormData = false, envParams = {}) {
+        if (typeof values === 'undefined')
             values = {};
-        }
+        if (typeof envParams === 'undefined')
+            envParams = {};
         let _Values = values;
         const keys = Object.keys(this.value);
         //@ts-ignore
@@ -47,6 +48,16 @@ export class ResourceParamsValue {
                 }
                 else {
                     r[storeKey] = value;
+                }
+            }
+        });
+        Object.keys(envParams).forEach(key => {
+            if (!r[key]) {
+                if (asFormData) {
+                    r.append(key, envParams[key].default);
+                }
+                else {
+                    r[key] = envParams[key].default;
                 }
             }
         });

@@ -5,9 +5,7 @@ export class EnvironmentValue {
     public readonly value: string;
 
     constructor(value?: string) {
-        if (!value) {
-            value = 'default';
-        }
+        if (!value) value = 'default';
         this.value = value;
     }
 
@@ -24,6 +22,26 @@ export class EnvironmentValue {
 
         if (env && env.auth) {
             return env.auth;
+        }
+
+        return {};
+    }
+
+    getParams(): UserAuth {
+        const env = getHTTPEnvironment(this.value);
+
+        if (env && env.params) {
+            return env.getParams();
+        }
+
+        return {};
+    }
+
+    getHeaders(): UserAuth {
+        const env = getHTTPEnvironment(this.value);
+
+        if (env && env.headers) {
+            return JSON.parse(JSON.stringify(env.headers));
         }
 
         return {};
