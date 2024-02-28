@@ -1,8 +1,8 @@
-import { LktEnvironment } from '../classes/LktEnvironment';
-import { LktResource } from '../classes/LktResource';
-import { EnvironmentData } from '../types/EnvironmentData';
-import { ResourceData } from '../types/ResourceData';
-import { getRouter } from './helpers';
+import {LktEnvironment} from '../classes/LktEnvironment';
+import {LktResource} from '../classes/LktResource';
+import {EnvironmentData} from '../types/EnvironmentData';
+import {ResourceData} from '../types/ResourceData';
+import {LktRouter} from "../classes/LktRouter";
 
 export const createHTTPGetResource = (data: ResourceData) => {
   const mix: ResourceData = { ...data, method: 'get' };
@@ -40,7 +40,7 @@ export const createHTTPDownloadResource = (data: ResourceData) => {
  */
 export const createHTTPResource = (data: ResourceData): LktResource|undefined => {
   const r = new LktResource(data);
-  getRouter().resources.add(r);
+  LktRouter.resources.add(r);
   return getHTTPResource(data.name);
 };
 
@@ -52,7 +52,7 @@ export const createHTTPEnvironment = (
   data: EnvironmentData
 ): LktEnvironment|undefined => {
   const r = new LktEnvironment(data.name, data.url, data.auth, data.params, data.headers);
-  getRouter().environments.add(r);
+  LktRouter.environments.add(r);
   return getHTTPEnvironment(data.name);
 };
 
@@ -61,7 +61,7 @@ export const createHTTPEnvironment = (
  * @param resource
  */
 export const getHTTPResource = (resource: string) => {
-  return getRouter().resources.get(resource);
+  return LktRouter.resources.get(resource);
 };
 
 /**
@@ -69,5 +69,5 @@ export const getHTTPResource = (resource: string) => {
  * @param environment
  */
 export const getHTTPEnvironment = (environment: string) => {
-  return getRouter().environments.get(environment);
+  return LktRouter.environments.get(environment);
 };

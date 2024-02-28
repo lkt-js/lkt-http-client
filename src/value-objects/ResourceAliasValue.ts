@@ -1,6 +1,6 @@
-import { getRouter } from '../functions/helpers';
-import { httpCall } from '../functions/http-functions';
-import { ResourceParamStack } from '../interfaces/ResourceParamStack';
+import {httpCall} from '../functions/http-functions';
+import {ResourceParamStack} from '../interfaces/ResourceParamStack';
+import {LktRouter} from "../classes/LktRouter";
 
 export class ResourceAliasValue {
   private readonly value: string;
@@ -13,7 +13,7 @@ export class ResourceAliasValue {
   }
 
   exists() {
-    return getRouter().resources.exists(this.value);
+    return LktRouter.resources.exists(this.value);
   }
 
   async call(params: ResourceParamStack) {

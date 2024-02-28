@@ -1,5 +1,5 @@
-import { getRouter } from '../functions/helpers';
 import { httpCall } from '../functions/http-functions';
+import { LktRouter } from "../classes/LktRouter";
 export class ResourceAliasValue {
     constructor(value) {
         if (!value) {
@@ -8,7 +8,7 @@ export class ResourceAliasValue {
         this.value = value;
     }
     exists() {
-        return getRouter().resources.exists(this.value);
+        return LktRouter.resources.exists(this.value);
     }
     async call(params) {
         return await httpCall(this.value, params);

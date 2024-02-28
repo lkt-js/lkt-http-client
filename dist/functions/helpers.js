@@ -19,11 +19,5 @@ export const paramsToString = (params) => {
  * @param name
  */
 export const existsHTTPResource = (name) => {
-    return getRouter().resources.exists(name);
-};
-export const getRouter = () => {
-    if (!(LktRouter.router instanceof LktRouter)) {
-        LktRouter.router = new LktRouter();
-    }
-    return LktRouter.router;
+    return LktRouter.resources.exists(name);
 };

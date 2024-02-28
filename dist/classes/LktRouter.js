@@ -1,9 +1,9 @@
-import { EnvironmentManager } from './EnvironmentManager';
-import { ResourceManager } from './ResourceManager';
-export class LktRouter {
-    constructor() {
-        this.resources = new ResourceManager();
-        this.environments = new EnvironmentManager();
-    }
-}
-LktRouter.DEFAULT_ENVIRONMENT = '';
+import { ResourceManager } from "./ResourceManager";
+import { EnvironmentManager } from "./EnvironmentManager";
+import { LktEnvironment } from "./LktEnvironment";
+let environments = new EnvironmentManager();
+environments.add(new LktEnvironment('default', ''));
+export const LktRouter = {
+    resources: new ResourceManager(),
+    environments,
+};

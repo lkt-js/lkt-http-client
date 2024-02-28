@@ -1,16 +1,11 @@
-import { EnvironmentManager } from './EnvironmentManager';
-import { ResourceManager } from './ResourceManager';
+import {RouterType} from "../types/RouterType";
+import {ResourceManager} from "./ResourceManager";
+import {EnvironmentManager} from "./EnvironmentManager";
+import {LktEnvironment} from "./LktEnvironment";
 
-export class LktRouter {
-  static router?: LktRouter;
-
-  resources: ResourceManager;
-  environments: EnvironmentManager;
-
-  constructor() {
-    this.resources = new ResourceManager();
-    this.environments = new EnvironmentManager();
-  }
-
-  static DEFAULT_ENVIRONMENT: string = '';
+let environments = new EnvironmentManager();
+environments.add(new LktEnvironment('default', ''));
+export const LktRouter: RouterType = {
+  resources: new ResourceManager(),
+  environments,
 }

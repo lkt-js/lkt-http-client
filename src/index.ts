@@ -5,7 +5,6 @@ import {download} from "./functions/download";
 
 export { ResourceCaller } from './classes/ResourceCaller';
 export { existsHTTPResource } from './functions/helpers';
-export { getRouter } from './functions/helpers';
 export { httpCall } from './functions/http-functions';
 export {
   createHTTPDeleteResource,
@@ -23,7 +22,6 @@ export type { HTTPResponse } from './types/HTTPResponse';
 
 const LktHttpClient = {
   install: (app: any, options: LktObject) => {
-    createHTTPEnvironment({ name: 'default', url: '' });
     //@ts-ignore
     window.download = download;
   },

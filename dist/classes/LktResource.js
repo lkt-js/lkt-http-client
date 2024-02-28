@@ -72,28 +72,26 @@ export class LktResource {
             timeout: 1000,
             headers: build.headers
         });
+        this.fetchStatus.start();
         switch (build.method) {
             case 'get':
-                this.fetchStatus.start();
                 return await instance.get(build.url, build)
-                    .then(this.parseResponse).catch(this.parseError);
+                    .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'post':
-                this.fetchStatus.start();
                 return await instance.post(build.url, build)
-                    .then(this.parseResponse).catch(this.parseError);
+                    .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'put':
-                this.fetchStatus.start();
                 return await instance.put(build.url, build)
-                    .then(this.parseResponse).catch(this.parseError);
+                    .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'delete':
-                this.fetchStatus.start();
                 return await instance.delete(build.url, build)
-                    .then(this.parseResponse).catch(this.parseError);
+                    .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'download':
             case 'open':
                 return await axios
                     .get(build.url, { responseType: 'blob' })
                     .then((r) => {
+                    this.fetchStatus.stop();
                     const contentDisposition = r.headers['content-disposition'];
                     let fileName = '';
                     if (contentDisposition) {
