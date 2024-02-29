@@ -69,7 +69,6 @@ export class LktResource {
         if (this.fetchStatus.inProgress())
             return successPromise(undefined, undefined);
         const instance = axios.create({
-            timeout: 1000,
             headers: build.headers
         });
         this.fetchStatus.start();
