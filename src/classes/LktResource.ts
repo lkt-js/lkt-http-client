@@ -130,11 +130,11 @@ export class LktResource {
                     .then((response: AxiosResponse) => this.parseResponse(response)).catch((error: AxiosError) => this.parseError(error));
 
             case 'post':
-                return await instance.post(build.url, build as unknown as AxiosRequestConfig)
+                return await instance.post(build.url, build.data, build as unknown as AxiosRequestConfig)
                     .then((response: AxiosResponse) => this.parseResponse(response)).catch((error: AxiosError) => this.parseError(error));
 
             case 'put':
-                return await instance.put(build.url, build as unknown as AxiosRequestConfig)
+                return await instance.put(build.url, build.data, build as unknown as AxiosRequestConfig)
                     .then((response: AxiosResponse) => this.parseResponse(response)).catch((error: AxiosError) => this.parseError(error));
 
             case 'delete':

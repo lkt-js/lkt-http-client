@@ -78,10 +78,10 @@ export class LktResource {
                 return await instance.get(build.url, build)
                     .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'post':
-                return await instance.post(build.url, build)
+                return await instance.post(build.url, build.data, build)
                     .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'put':
-                return await instance.put(build.url, build)
+                return await instance.put(build.url, build.data, build)
                     .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'delete':
                 return await instance.delete(build.url, build)
