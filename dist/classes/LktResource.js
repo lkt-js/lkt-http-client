@@ -22,6 +22,7 @@ import { MapDataValue } from "../value-objects/MapDataValue";
 import { DigToAutoReloadIdValue } from "../value-objects/DigToAutoReloadIdValue";
 import { CustomDataValue } from "../value-objects/CustomDataValue";
 import { mergeObjects } from "lkt-object-tools";
+import { debug } from "../functions/debug";
 export class LktResource {
     constructor(data) {
         this.data = data;
@@ -45,9 +46,12 @@ export class LktResource {
         this.custom = new CustomDataValue(data.custom);
     }
     build(params) {
+        debug('Build resource', this.name.value, this.url.value, this.method.value);
+        debug('Given params', params);
         let baseParams = this.environment.getParams();
         let customParams = mergeObjects(baseParams, params);
         let data = this.params.prepareValues(customParams, this.isFileUpload.value, baseParams);
+        debug('Prepared data', data);
         const url = this.url.prepare(this.environment.getUrl());
         let link = this.params.replaceUrlValues(url, customParams);
         if (this.method.hasUrlParams()) {
@@ -56,16 +60,19 @@ export class LktResource {
                 link = [link, stringParams].join('?');
             data = {};
         }
+        debug('Prepared url', link);
         const statusValidator = (status) => this.validStatuses.includes(status);
         let headers = {}, envHeaders = this.environment.getHeaders();
         headers = mergeObjects(headers, envHeaders);
         if (this.isFileUpload.value) {
             headers = mergeObjects(headers, { 'Content-Type': 'multipart/form-data' });
         }
+        debug('Prepared headers', headers);
         return new ResourceBuild(link, this.method.toPrimitive(), data, this.environment.getAuth(), statusValidator, headers);
     }
     async call(params) {
         const build = this.build(params);
+        debug('Call resource -> build:', build);
         if (this.fetchStatus.inProgress())
             return successPromise(undefined, undefined);
         const instance = axios.create({
@@ -120,6 +127,7 @@ export class LktResource {
         }
     }
     parseResponse(response) {
+        debug('Parse response:', response);
         this.fetchStatus.stop();
         let r = this.returnsFullResponse.value ? response : response.data;
         let maxPage = -1;
@@ -142,6 +150,7 @@ export class LktResource {
         if (this.mapData.hasActionDefined())
             r = this.mapData.run(r);
         const R = { data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId };
+        debug('Parsed response:', R);
         if (this.onSuccess.hasActionDefined())
             return this.onSuccess.run(R);
         return R;

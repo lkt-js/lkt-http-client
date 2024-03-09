@@ -6,6 +6,7 @@ import {download} from "./functions/download";
 export { ResourceCaller } from './classes/ResourceCaller';
 export { existsHTTPResource } from './functions/helpers';
 export { httpCall } from './functions/http-functions';
+export { debugLktHttpClient } from './functions/debug';
 export {
   createHTTPDeleteResource,
   createHTTPDownloadResource,

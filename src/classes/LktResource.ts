@@ -26,6 +26,7 @@ import {MapDataValue} from "../value-objects/MapDataValue";
 import {DigToAutoReloadIdValue} from "../value-objects/DigToAutoReloadIdValue";
 import {CustomDataValue} from "../value-objects/CustomDataValue";
 import {mergeObjects} from "lkt-object-tools";
+import {debug} from "../functions/debug";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -74,6 +75,9 @@ export class LktResource {
 
     build(params: LktObject) {
 
+        debug('Build resource', this.name.value, this.url.value, this.method.value);
+        debug('Given params', params);
+
         let baseParams = this.environment.getParams();
         let customParams = mergeObjects(baseParams, params);
 
@@ -83,6 +87,8 @@ export class LktResource {
             baseParams
         );
 
+        debug('Prepared data', data);
+
         const url = this.url.prepare(this.environment.getUrl());
         let link = this.params.replaceUrlValues(url, customParams);
 
@@ -91,6 +97,8 @@ export class LktResource {
             if (stringParams.length > 0) link = [link, stringParams].join('?');
             data = {};
         }
+
+        debug('Prepared url', link);
 
         const statusValidator = (status: number) => this.validStatuses.includes(status);
 
@@ -102,6 +110,8 @@ export class LktResource {
         if (this.isFileUpload.value) {
             headers = mergeObjects(headers, {'Content-Type': 'multipart/form-data'});
         }
+
+        debug('Prepared headers', headers);
 
         return new ResourceBuild(
             link,
@@ -115,6 +125,8 @@ export class LktResource {
 
     async call(params: LktObject): Promise<any> {
         const build = this.build(params);
+
+        debug('Call resource -> build:', build);
 
         if (this.fetchStatus.inProgress()) return successPromise(undefined, undefined);
 
@@ -182,6 +194,8 @@ export class LktResource {
     }
 
     parseResponse(response: AxiosResponse): HTTPResponse {
+
+        debug('Parse response:', response);
         this.fetchStatus.stop();
 
         let r = this.returnsFullResponse.value ? response : response.data;
@@ -206,6 +220,7 @@ export class LktResource {
         if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
 
         const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId};
+        debug('Parsed response:', R);
 
         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
         return R;
