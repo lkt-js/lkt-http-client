@@ -39,6 +39,6 @@ export class ResourceMethodValue {
     }
 
     hasUrlParams() {
-        return this.isGET() || this.isOPEN();
+        return this.isGET() || this.isOPEN() || this.isDOWNLOAD();
     }
 }

@@ -15,6 +15,7 @@ export type ResourceData = {
     environment?: string;
     params?: ResourceParamStack;
     returnsFullResponse?: boolean;
+    keepUrlParams?: boolean;
     onSuccess?: Function;
     mapData?: Function;
     digToData?: string;

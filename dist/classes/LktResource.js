@@ -23,6 +23,8 @@ import { DigToAutoReloadIdValue } from "../value-objects/DigToAutoReloadIdValue"
 import { CustomDataValue } from "../value-objects/CustomDataValue";
 import { mergeObjects } from "lkt-object-tools";
 import { debug } from "../functions/debug";
+import { KeepUrlParamsValue } from "../value-objects/KeepUrlParamsValue";
+import { Settings } from "../settings/Settings";
 export class LktResource {
     constructor(data) {
         this.data = data;
@@ -44,6 +46,7 @@ export class LktResource {
         this.modificationsDig = new ModificationsDigValue(data.digToModifications);
         this.digToAutoReloadId = new DigToAutoReloadIdValue(data.digToAutoReloadId);
         this.custom = new CustomDataValue(data.custom);
+        this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
     }
     build(params) {
         debug('Build resource', this.name.value, this.url.value, this.method.value);
@@ -55,6 +58,14 @@ export class LktResource {
         const url = this.url.prepare(this.environment.getUrl());
         let link = this.params.replaceUrlValues(url, customParams);
         if (this.method.hasUrlParams()) {
+            if (!this.keepUrlParams.keepValues()) {
+                let left = Settings.RESOURCE_PARAM_LEFT_SEPARATOR, right = Settings.RESOURCE_PARAM_RIGHT_SEPARATOR, regex = new RegExp(`[${left}${right}]`), dataKeys = Object.keys(data);
+                let _url = url.split(regex);
+                _url = _url.filter(z => dataKeys.includes(z));
+                _url.forEach(z => delete data[z]);
+                debug('Remove data from string params', _url);
+                debug('Final prepared data', data);
+            }
             const stringParams = paramsToString(data);
             if (stringParams.length > 0)
                 link = [link, stringParams].join('?');
@@ -94,8 +105,9 @@ export class LktResource {
                     .then((response) => this.parseResponse(response)).catch((error) => this.parseError(error));
             case 'download':
             case 'open':
-                return await axios
-                    .get(build.url, { responseType: 'blob' })
+                //@ts-ignore
+                build.responseType = 'blob';
+                return await instance.get(build.url, build)
                     .then((r) => {
                     this.fetchStatus.stop();
                     const contentDisposition = r.headers['content-disposition'];
@@ -118,10 +130,7 @@ export class LktResource {
                     if (this.onSuccess.hasActionDefined())
                         return this.onSuccess.run(R);
                     return R;
-                })
-                    .catch((error) => {
-                    return error;
-                });
+                }).catch((error) => this.parseError(error));
             default:
                 throw new Error(`Error: Invalid method in call ${JSON.stringify(build)}`);
         }

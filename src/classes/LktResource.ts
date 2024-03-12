@@ -27,6 +27,8 @@ import {DigToAutoReloadIdValue} from "../value-objects/DigToAutoReloadIdValue";
 import {CustomDataValue} from "../value-objects/CustomDataValue";
 import {mergeObjects} from "lkt-object-tools";
 import {debug} from "../functions/debug";
+import {KeepUrlParamsValue} from "../value-objects/KeepUrlParamsValue";
+import {Settings} from "../settings/Settings";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -49,6 +51,7 @@ export class LktResource {
     private modificationsDig: ModificationsDigValue;
     private digToAutoReloadId: DigToAutoReloadIdValue;
     private custom: CustomDataValue;
+    private keepUrlParams: KeepUrlParamsValue;
 
     constructor(data: ResourceData) {
         this.data = data;
@@ -71,6 +74,7 @@ export class LktResource {
         this.modificationsDig = new ModificationsDigValue(data.digToModifications);
         this.digToAutoReloadId = new DigToAutoReloadIdValue(data.digToAutoReloadId);
         this.custom = new CustomDataValue(data.custom);
+        this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
     }
 
     build(params: LktObject) {
@@ -93,6 +97,19 @@ export class LktResource {
         let link = this.params.replaceUrlValues(url, customParams);
 
         if (this.method.hasUrlParams()) {
+            if (!this.keepUrlParams.keepValues()) {
+                let left = Settings.RESOURCE_PARAM_LEFT_SEPARATOR,
+                    right = Settings.RESOURCE_PARAM_RIGHT_SEPARATOR,
+                    regex = new RegExp(`[${left}${right}]`),
+                    dataKeys = Object.keys(data);
+
+                let _url = url.split(regex);
+                _url = _url.filter(z => dataKeys.includes(z));
+                _url.forEach(z => delete data[z]);
+
+                debug('Remove data from string params', _url);
+                debug('Final prepared data', data);
+            }
             const stringParams = paramsToString(data);
             if (stringParams.length > 0) link = [link, stringParams].join('?');
             data = {};
@@ -154,8 +171,9 @@ export class LktResource {
 
             case 'download':
             case 'open':
-                return await axios
-                    .get(build.url, {responseType: 'blob'})
+                //@ts-ignore
+                build.responseType = 'blob';
+                return await instance.get(build.url, build as unknown as AxiosRequestConfig)
                     .then((r: AxiosResponse) => {
                         this.fetchStatus.stop();
                         const contentDisposition = r.headers['content-disposition'];
@@ -181,10 +199,8 @@ export class LktResource {
 
                         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return R;
-                    })
-                    .catch((error) => {
-                        return error;
-                    });
+
+                    }).catch((error: AxiosError) => this.parseError(error));
 
             default:
                 throw new Error(
