@@ -29,6 +29,7 @@ import {mergeObjects} from "lkt-object-tools";
 import {debug} from "../functions/debug";
 import {KeepUrlParamsValue} from "../value-objects/KeepUrlParamsValue";
 import {Settings} from "../settings/Settings";
+import {IsFullUrlValue} from "../value-objects/IsFullUrlValue";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -52,6 +53,7 @@ export class LktResource {
     private digToAutoReloadId: DigToAutoReloadIdValue;
     private custom: CustomDataValue;
     private keepUrlParams: KeepUrlParamsValue;
+    private isFullUrl: IsFullUrlValue;
 
     constructor(data: ResourceData) {
         this.data = data;
@@ -75,6 +77,7 @@ export class LktResource {
         this.digToAutoReloadId = new DigToAutoReloadIdValue(data.digToAutoReloadId);
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
+        this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
     }
 
     build(params: LktObject) {
@@ -93,7 +96,8 @@ export class LktResource {
 
         debug('Prepared data', data);
 
-        const url = this.url.prepare(this.environment.getUrl());
+        let baseUrl = this.isFullUrl.value ? '' : this.environment.getUrl();
+        const url = this.url.prepare(baseUrl);
         let link = this.params.replaceUrlValues(url, customParams);
 
         if (this.method.hasUrlParams()) {

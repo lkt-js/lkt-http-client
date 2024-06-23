@@ -15,6 +15,7 @@ export type ResourceData = {
     environment?: string;
     params?: ResourceParamStack;
     returnsFullResponse?: boolean;
+    isFullUrl?: boolean;
     keepUrlParams?: boolean;
     onSuccess?: Function;
     mapData?: Function;
