@@ -199,7 +199,7 @@ export class LktResource {
 
                         let perms: string[] = [];
 
-                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, custom: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0};
+                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, custom: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0, contentType: ''};
 
                         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return R;
@@ -239,7 +239,9 @@ export class LktResource {
 
         if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
 
-        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId};
+        let contentType = <string>response.headers["content-type"];
+
+        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId, contentType};
         debug('Parsed response:', R);
 
         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
@@ -249,9 +251,11 @@ export class LktResource {
     parseError(error: AxiosError): HTTPResponse {
         this.fetchStatus.stop();
         let perms: string[] = [];
+
+        let contentType = <string>error.response?.headers["content-type"];
         const R: HTTPResponse = {data: {
                 status: typeof error.response === 'undefined' ? 500 : error.response.status
-            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0};
+            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0, contentType};
         return R;
     }
 }

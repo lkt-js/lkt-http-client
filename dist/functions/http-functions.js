@@ -1,6 +1,6 @@
 import { getHTTPResource } from './startup-functions';
 export const httpCall = async (resourceName = '', params = {}) => {
-    const resource = getHTTPResource(resourceName);
+    const resource = typeof resourceName === 'object' ? resourceName : getHTTPResource(resourceName);
     if (typeof resource !== 'undefined') {
         return await resource.call(params);
     }
@@ -13,7 +13,8 @@ export const httpCall = async (resourceName = '', params = {}) => {
         success: false,
         httpStatus: -1,
         autoReloadId: -1,
-        custom: {}
+        custom: {},
+        contentType: ''
     };
     return r;
 };

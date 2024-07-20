@@ -1,2 +1,3 @@
 import { LktObject } from 'lkt-ts-interfaces';
-export declare const httpCall: (resourceName?: string, params?: LktObject) => Promise<any>;
+import { LktResource } from "../classes/LktResource";
+export declare const httpCall: (resourceName?: string | LktResource, params?: LktObject) => Promise<any>;

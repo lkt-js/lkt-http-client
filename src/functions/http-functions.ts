@@ -3,9 +3,10 @@ import {LktObject} from 'lkt-ts-interfaces';
 import {getHTTPResource} from './startup-functions';
 import {HTTPResponse} from "../types/HTTPResponse";
 import {AxiosError, AxiosResponse} from "axios";
+import {LktResource} from "../classes/LktResource";
 
-export const httpCall = async (resourceName: string = '', params: LktObject = {}) => {
-    const resource = getHTTPResource(resourceName);
+export const httpCall = async (resourceName: string|LktResource = '', params: LktObject = {}) => {
+    const resource = typeof resourceName === 'object' ? resourceName : getHTTPResource(resourceName);
     if (typeof resource !== 'undefined') {
         return await resource.call(params);
     }
@@ -18,7 +19,8 @@ export const httpCall = async (resourceName: string = '', params: LktObject = {}
         success: false,
         httpStatus: -1,
         autoReloadId: -1,
-        custom: {}
+        custom: {},
+        contentType: ''
     };
     return r;
 };

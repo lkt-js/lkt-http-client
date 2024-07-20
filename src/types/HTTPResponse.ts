@@ -11,4 +11,5 @@ export type HTTPResponse = {
   httpStatus: number;
   autoReloadId: number|string;
   custom: LktObject;
+  contentType: string;
 };
