@@ -23,6 +23,9 @@ export declare class LktResource {
     private permDig;
     private modificationsDig;
     private digToAutoReloadId;
+    private digToValidationCode;
+    private digToValidationMessage;
+    private digToValidationData;
     private custom;
     private keepUrlParams;
     private isFullUrl;

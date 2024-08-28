@@ -20,7 +20,10 @@ export const httpCall = async (resourceName: string|LktResource = '', params: Lk
         httpStatus: -1,
         autoReloadId: -1,
         custom: {},
-        contentType: ''
+        contentType: '',
+        validationCode: '',
+        validationMessage: '',
+        validationData: {},
     };
     return r;
 };

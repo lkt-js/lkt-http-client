@@ -11,4 +11,7 @@ export type HTTPResponse = {
     autoReloadId: number | string;
     custom: LktObject;
     contentType: string;
+    validationCode: string;
+    validationMessage: string;
+    validationData: LktObject;
 };

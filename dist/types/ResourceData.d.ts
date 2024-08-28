@@ -24,5 +24,8 @@ export type ResourceData = {
     digToPerms?: string;
     digToModifications?: string;
     digToAutoReloadId?: string;
+    digToValidationCode?: string;
+    digToValidationMessage?: string;
+    digToValidationData?: string;
     custom?: LktObject;
 };

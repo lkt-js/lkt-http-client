@@ -14,7 +14,10 @@ export const httpCall = async (resourceName = '', params = {}) => {
         httpStatus: -1,
         autoReloadId: -1,
         custom: {},
-        contentType: ''
+        contentType: '',
+        validationCode: '',
+        validationMessage: '',
+        validationData: {},
     };
     return r;
 };

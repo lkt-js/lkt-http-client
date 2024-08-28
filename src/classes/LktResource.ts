@@ -30,6 +30,9 @@ import {debug} from "../functions/debug";
 import {KeepUrlParamsValue} from "../value-objects/KeepUrlParamsValue";
 import {Settings} from "../settings/Settings";
 import {IsFullUrlValue} from "../value-objects/IsFullUrlValue";
+import {ValidationMessageDigValue} from "../value-objects/ValidationMessageDigValue";
+import {ValidationDataDigValue} from "../value-objects/ValidationDataDigValue";
+import {ValidationCodeDigValue} from "../value-objects/ValidationCodeDigValue";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -51,6 +54,9 @@ export class LktResource {
     private permDig: PermDigValue;
     private modificationsDig: ModificationsDigValue;
     private digToAutoReloadId: DigToAutoReloadIdValue;
+    private digToValidationCode: ValidationCodeDigValue;
+    private digToValidationMessage: ValidationMessageDigValue;
+    private digToValidationData: ValidationDataDigValue;
     private custom: CustomDataValue;
     private keepUrlParams: KeepUrlParamsValue;
     private isFullUrl: IsFullUrlValue;
@@ -75,6 +81,9 @@ export class LktResource {
         this.permDig = new PermDigValue(data.digToPerms);
         this.modificationsDig = new ModificationsDigValue(data.digToModifications);
         this.digToAutoReloadId = new DigToAutoReloadIdValue(data.digToAutoReloadId);
+        this.digToValidationCode = new ValidationCodeDigValue(data.digToValidationCode);
+        this.digToValidationMessage = new ValidationMessageDigValue(data.digToValidationMessage);
+        this.digToValidationData = new ValidationDataDigValue(data.digToValidationData);
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
         this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
@@ -199,7 +208,7 @@ export class LktResource {
 
                         let perms: string[] = [];
 
-                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, custom: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0, contentType: ''};
+                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, custom: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0, contentType: '', validationCode: '', validationMessage: '', validationData: {}};
 
                         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return R;
@@ -235,13 +244,22 @@ export class LktResource {
         let autoReloadId: number|string = '';
         if (this.digToAutoReloadId.hasToDig()) autoReloadId = this.digToAutoReloadId.dig(r);
 
+        let validationMessage: string = '';
+        if (this.digToValidationMessage.hasToDig()) validationMessage = this.digToValidationMessage.dig(r);
+
+        let validationCode: string = '';
+        if (this.digToValidationCode.hasToDig()) validationCode = this.digToValidationCode.dig(r);
+
+        let validationData: LktObject = {};
+        if (this.digToValidationData.hasToDig()) validationData = this.digToValidationData.dig(r);
+
         if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
 
         if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
 
         let contentType = <string>response.headers["content-type"];
 
-        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId, contentType};
+        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId, contentType, validationCode, validationMessage, validationData};
         debug('Parsed response:', R);
 
         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
@@ -255,7 +273,7 @@ export class LktResource {
         let contentType = <string>error.response?.headers["content-type"];
         const R: HTTPResponse = {data: {
                 status: typeof error.response === 'undefined' ? 500 : error.response.status
-            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0, contentType};
+            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0, contentType, validationCode: '', validationMessage: '', validationData: {}};
         return R;
     }
 }
