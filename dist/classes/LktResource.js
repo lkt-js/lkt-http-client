@@ -29,6 +29,7 @@ import { IsFullUrlValue } from "../value-objects/IsFullUrlValue";
 import { ValidationMessageDigValue } from "../value-objects/ValidationMessageDigValue";
 import { ValidationDataDigValue } from "../value-objects/ValidationDataDigValue";
 import { ValidationCodeDigValue } from "../value-objects/ValidationCodeDigValue";
+import { DigToRedirectValue } from "../value-objects/DigToRedirectValue";
 export class LktResource {
     constructor(data) {
         this.data = data;
@@ -52,6 +53,7 @@ export class LktResource {
         this.digToValidationCode = new ValidationCodeDigValue(data.digToValidationCode);
         this.digToValidationMessage = new ValidationMessageDigValue(data.digToValidationMessage);
         this.digToValidationData = new ValidationDataDigValue(data.digToValidationData);
+        this.digToRedirect = new DigToRedirectValue(data.digToRedirect);
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
         this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
@@ -176,6 +178,17 @@ export class LktResource {
             r = this.returnsResponseDig.dig(r);
         if (this.mapData.hasActionDefined())
             r = this.mapData.run(r);
+        let redirect = '';
+        if (this.digToRedirect.hasToDig())
+            redirect = this.digToRedirect.dig(r);
+        if (redirect) {
+            if (window.location.href === redirect) {
+                window.location.reload();
+            }
+            else {
+                window.location.href = redirect;
+            }
+        }
         let contentType = response.headers["content-type"];
         const R = { data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId, contentType, validationCode, validationMessage, validationData };
         debug('Parsed response:', R);

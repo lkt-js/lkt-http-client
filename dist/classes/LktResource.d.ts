@@ -26,6 +26,7 @@ export declare class LktResource {
     private digToValidationCode;
     private digToValidationMessage;
     private digToValidationData;
+    private digToRedirect;
     private custom;
     private keepUrlParams;
     private isFullUrl;

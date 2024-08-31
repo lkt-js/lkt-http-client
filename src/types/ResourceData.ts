@@ -29,5 +29,6 @@ export type ResourceData = {
   digToValidationCode?: string;
   digToValidationMessage?: string;
   digToValidationData?: string;
+  digToRedirect?: string;
   custom?: LktObject;
 };

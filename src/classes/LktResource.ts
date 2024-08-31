@@ -33,6 +33,7 @@ import {IsFullUrlValue} from "../value-objects/IsFullUrlValue";
 import {ValidationMessageDigValue} from "../value-objects/ValidationMessageDigValue";
 import {ValidationDataDigValue} from "../value-objects/ValidationDataDigValue";
 import {ValidationCodeDigValue} from "../value-objects/ValidationCodeDigValue";
+import {DigToRedirectValue} from "../value-objects/DigToRedirectValue";
 
 export class LktResource {
     private readonly data: ResourceData;
@@ -57,6 +58,7 @@ export class LktResource {
     private digToValidationCode: ValidationCodeDigValue;
     private digToValidationMessage: ValidationMessageDigValue;
     private digToValidationData: ValidationDataDigValue;
+    private digToRedirect: DigToRedirectValue;
     private custom: CustomDataValue;
     private keepUrlParams: KeepUrlParamsValue;
     private isFullUrl: IsFullUrlValue;
@@ -84,6 +86,7 @@ export class LktResource {
         this.digToValidationCode = new ValidationCodeDigValue(data.digToValidationCode);
         this.digToValidationMessage = new ValidationMessageDigValue(data.digToValidationMessage);
         this.digToValidationData = new ValidationDataDigValue(data.digToValidationData);
+        this.digToRedirect = new DigToRedirectValue(data.digToRedirect);
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
         this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
@@ -256,6 +259,17 @@ export class LktResource {
         if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
 
         if (this.mapData.hasActionDefined()) r = this.mapData.run(r);
+
+        let redirect: string = '';
+        if (this.digToRedirect.hasToDig()) redirect = this.digToRedirect.dig(r);
+
+        if (redirect) {
+            if (window.location.href === redirect) {
+                window.location.reload();
+            } else {
+                window.location.href = redirect;
+            }
+        }
 
         let contentType = <string>response.headers["content-type"];
 
