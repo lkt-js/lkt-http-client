@@ -177,7 +177,9 @@ export class LktResource {
         if (this.returnsResponseDig.hasToDig())
             r = this.returnsResponseDig.dig(r);
         if (this.mapData.hasActionDefined())
-            r = this.mapData.run(r);
+            r = this.mapData.run(r, {
+                custom,
+            });
         let redirect = '';
         if (this.digToRedirect.hasToDig())
             redirect = this.digToRedirect.dig(r);

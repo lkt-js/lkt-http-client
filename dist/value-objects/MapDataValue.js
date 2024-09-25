@@ -8,7 +8,7 @@ export class MapDataValue {
     hasActionDefined() {
         return typeof this.value === 'function';
     }
-    run(data) {
-        return this.value(data);
+    run(data, props) {
+        return this.value(data, props);
     }
 }

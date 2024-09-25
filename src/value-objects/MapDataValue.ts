@@ -14,7 +14,7 @@ export class MapDataValue {
         return typeof this.value === 'function';
     }
 
-    run(data: LktObject) {
-        return this.value(data);
+    run(data: LktObject, props: LktObject) {
+        return this.value(data, props);
     }
 }
