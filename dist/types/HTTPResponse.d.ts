@@ -1,6 +1,6 @@
 import { LktObject } from 'lkt-ts-interfaces';
-import { AxiosError, AxiosResponse } from "axios";
-export type HTTPResponse = {
+import { AxiosError, AxiosResponse } from 'axios';
+export interface HTTPResponse {
     data: LktObject | any[];
     maxPage: number;
     perms: string[];
@@ -14,4 +14,4 @@ export type HTTPResponse = {
     validationCode: string;
     validationMessage: string;
     validationData: LktObject;
-};
+}

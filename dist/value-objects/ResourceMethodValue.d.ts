@@ -1,4 +1,4 @@
-import { ResourceMethod } from "../types/ResourceMethod";
+import { ResourceMethod } from '../enums/ResourceMethod';
 export declare class ResourceMethodValue {
     readonly value: ResourceMethod;
     constructor(value?: ResourceMethod);

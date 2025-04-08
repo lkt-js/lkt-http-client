@@ -1,5 +1,4 @@
 import { LktObject } from 'lkt-ts-interfaces';
-
 import { LktRouter } from '../classes/LktRouter';
 
 export const paramsToString = (params: LktObject) => {
@@ -23,5 +22,5 @@ export const paramsToString = (params: LktObject) => {
  * @param name
  */
 export const existsHTTPResource = (name: string): boolean => {
-    return LktRouter.resources.exists(name);
+    return LktRouter.hasResource(name);
 }

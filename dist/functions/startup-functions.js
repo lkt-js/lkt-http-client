@@ -1,28 +1,29 @@
 import { LktEnvironment } from '../classes/LktEnvironment';
 import { LktResource } from '../classes/LktResource';
-import { LktRouter } from "../classes/LktRouter";
+import { LktRouter } from '../classes/LktRouter';
+import { ResourceMethod } from '../enums/ResourceMethod';
 export const createHTTPGetResource = (data) => {
-    const mix = { ...data, method: 'get' };
+    const mix = { ...data, method: ResourceMethod.Get };
     return createHTTPResource(mix);
 };
 export const createHTTPPostResource = (data) => {
-    const mix = { ...data, method: 'post' };
+    const mix = { ...data, method: ResourceMethod.Post };
     return createHTTPResource(mix);
 };
 export const createHTTPPutResource = (data) => {
-    const mix = { ...data, method: 'put' };
+    const mix = { ...data, method: ResourceMethod.Put };
     return createHTTPResource(mix);
 };
 export const createHTTPDeleteResource = (data) => {
-    const mix = { ...data, method: 'delete' };
+    const mix = { ...data, method: ResourceMethod.Delete };
     return createHTTPResource(mix);
 };
 export const createHTTPOpenResource = (data) => {
-    const mix = { ...data, method: 'open' };
+    const mix = { ...data, method: ResourceMethod.Open };
     return createHTTPResource(mix);
 };
 export const createHTTPDownloadResource = (data) => {
-    const mix = { ...data, method: 'download' };
+    const mix = { ...data, method: ResourceMethod.Download };
     return createHTTPResource(mix);
 };
 /**
@@ -31,7 +32,7 @@ export const createHTTPDownloadResource = (data) => {
  */
 export const createHTTPResource = (data) => {
     const r = new LktResource(data);
-    LktRouter.resources.add(r);
+    LktRouter.addResource(r);
     return getHTTPResource(data.name);
 };
 /**
@@ -40,7 +41,7 @@ export const createHTTPResource = (data) => {
  */
 export const createHTTPEnvironment = (data) => {
     const r = new LktEnvironment(data.name, data.url, data.auth, data.params, data.headers);
-    LktRouter.environments.add(r);
+    LktRouter.addEnvironment(r);
     return getHTTPEnvironment(data.name);
 };
 /**
@@ -48,12 +49,12 @@ export const createHTTPEnvironment = (data) => {
  * @param resource
  */
 export const getHTTPResource = (resource) => {
-    return LktRouter.resources.get(resource);
+    return LktRouter.getResource(resource);
 };
 /**
  *
  * @param environment
  */
 export const getHTTPEnvironment = (environment) => {
-    return LktRouter.environments.get(environment);
+    return LktRouter.getEnvironment(environment);
 };

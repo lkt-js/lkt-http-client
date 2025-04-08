@@ -13,7 +13,7 @@ export class ResourceAliasValue {
   }
 
   exists() {
-    return LktRouter.resources.exists(this.value);
+    return LktRouter.hasResource(this.value);
   }
 
   async call(params: ResourceParamStack) {

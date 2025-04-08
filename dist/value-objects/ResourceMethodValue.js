@@ -1,7 +1,8 @@
+import { ResourceMethod } from '../enums/ResourceMethod';
 export class ResourceMethodValue {
     constructor(value) {
         if (!value) {
-            value = 'get';
+            value = ResourceMethod.Get;
         }
         this.value = value;
     }
@@ -9,22 +10,22 @@ export class ResourceMethodValue {
         return this.value.toLowerCase();
     }
     isGET() {
-        return this.value === 'get';
+        return this.value === ResourceMethod.Get;
     }
     isPOST() {
-        return this.value === 'post';
+        return this.value === ResourceMethod.Post;
     }
     isPUT() {
-        return this.value === 'put';
+        return this.value === ResourceMethod.Put;
     }
     isDELETE() {
-        return this.value === 'delete';
+        return this.value === ResourceMethod.Delete;
     }
     isOPEN() {
-        return this.value === 'open';
+        return this.value === ResourceMethod.Open;
     }
     isDOWNLOAD() {
-        return this.value === 'download';
+        return this.value === ResourceMethod.Download;
     }
     hasUrlParams() {
         return this.isGET() || this.isOPEN() || this.isDOWNLOAD();

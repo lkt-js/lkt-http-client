@@ -1,9 +1,8 @@
-import {LktObject} from 'lkt-ts-interfaces';
+import { LktObject } from 'lkt-ts-interfaces';
 
-import {getHTTPResource} from './startup-functions';
-import {HTTPResponse} from "../types/HTTPResponse";
-import {AxiosError, AxiosResponse} from "axios";
-import {LktResource} from "../classes/LktResource";
+import { getHTTPResource } from './startup-functions';
+import { HTTPResponse } from '../types/HTTPResponse';
+import { LktResource } from '../classes/LktResource';
 
 export const httpCall = async (resourceName: string|LktResource = '', params: LktObject = {}) => {
     const resource = typeof resourceName === 'object' ? resourceName : getHTTPResource(resourceName);

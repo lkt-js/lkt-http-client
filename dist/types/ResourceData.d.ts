@@ -1,9 +1,9 @@
 import { LktObject } from 'lkt-ts-interfaces';
 import { ResourceParamStack } from '../interfaces/ResourceParamStack';
 import { ResourceDataType } from './ResourceDataType';
-import { ResourceMethod } from './ResourceMethod';
+import { ResourceMethod } from '../enums/ResourceMethod';
 import { StatusValidator } from './StatusValidator';
-export type ResourceData = {
+export interface ResourceData {
     url: string;
     name: string;
     method?: ResourceMethod;
@@ -29,4 +29,4 @@ export type ResourceData = {
     digToValidationData?: string;
     digToRedirect?: string;
     custom?: LktObject;
-};
+}

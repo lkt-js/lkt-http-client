@@ -1,11 +1,11 @@
-import {ResourceMethod} from "../types/ResourceMethod";
+import { ResourceMethod } from '../enums/ResourceMethod';
 
 export class ResourceMethodValue {
     public readonly value: ResourceMethod;
 
     constructor(value?: ResourceMethod) {
         if (!value) {
-            value = 'get';
+            value = ResourceMethod.Get;
         }
         this.value = value;
     }
@@ -15,27 +15,27 @@ export class ResourceMethodValue {
     }
 
     isGET(): boolean {
-        return this.value === 'get';
+        return this.value === ResourceMethod.Get;
     }
 
     isPOST(): boolean {
-        return this.value === 'post';
+        return this.value === ResourceMethod.Post;
     }
 
     isPUT(): boolean {
-        return this.value === 'put';
+        return this.value === ResourceMethod.Put;
     }
 
     isDELETE(): boolean {
-        return this.value === 'delete';
+        return this.value === ResourceMethod.Delete;
     }
 
     isOPEN(): boolean {
-        return this.value === 'open';
+        return this.value === ResourceMethod.Open;
     }
 
     isDOWNLOAD(): boolean {
-        return this.value === 'download';
+        return this.value === ResourceMethod.Download;
     }
 
     hasUrlParams() {

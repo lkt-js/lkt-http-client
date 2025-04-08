@@ -8,7 +8,7 @@ export class ResourceAliasValue {
         this.value = value;
     }
     exists() {
-        return LktRouter.resources.exists(this.value);
+        return LktRouter.hasResource(this.value);
     }
     async call(params) {
         return await httpCall(this.value, params);

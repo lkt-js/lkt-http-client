@@ -19,5 +19,5 @@ export const paramsToString = (params) => {
  * @param name
  */
 export const existsHTTPResource = (name) => {
-    return LktRouter.resources.exists(name);
+    return LktRouter.hasResource(name);
 };
