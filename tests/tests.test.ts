@@ -6,10 +6,10 @@ import {
 import { LktResource } from '../src/classes/LktResource';
 import { ResourceBuild } from '../src/classes/ResourceBuild';
 import { EnvironmentData } from '../src/types/EnvironmentData';
-import { ResourceData } from '../src/types/ResourceData';
+import { ResourceConfig } from '../src/config/ResourceConfig';
 
 test('create a resource', () => {
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     params: {
@@ -33,7 +33,7 @@ test('create a resource', () => {
 });
 
 test('create a resource get', () => {
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     params: {
@@ -65,7 +65,7 @@ test('call a resource get with custom environment', () => {
 
   createHTTPEnvironment(envData);
 
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     params: {
@@ -98,7 +98,7 @@ test('renaming params', () => {
 
   createHTTPEnvironment(envData);
 
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     params: {
@@ -131,7 +131,7 @@ test('validate params', () => {
 
   createHTTPEnvironment(envData);
 
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     params: {
@@ -165,7 +165,7 @@ test('create a resource (fileupload)', () => {
   };
 
   createHTTPEnvironment(envData);
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     method: 'put',

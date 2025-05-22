@@ -17,8 +17,10 @@ export {
   getHTTPEnvironment,
   getHTTPResource,
 } from './functions/startup-functions';
-export type { ResourceCallerConfig } from './types/ResourceCallerConfig';
-export type { HTTPResponse } from './types/HTTPResponse';
+export { ResourceCallerConfig } from './types/ResourceCallerConfig';
+export { HTTPResponse } from './types/HTTPResponse';
+export { ModificationHandleType } from './enums/ModificationHandleType';
+export { ResourceMethod } from './enums/ResourceMethod';
 
 const LktHttpClient = {
   install: (app: any, options: LktObject) => {

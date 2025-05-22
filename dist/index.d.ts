@@ -59,7 +59,14 @@ declare enum ResourceMethod {
 
 type StatusValidator = (status: number) => boolean;
 
-interface ResourceData {
+type DataMapper = (data: LktObject | Array<LktObject>) => LktObject;
+
+declare enum ModificationHandleType {
+    Auto = "auto",
+    OverrideData = "override-data"
+}
+
+interface ResourceConfig {
     url: string;
     name: string;
     method?: ResourceMethod;
@@ -74,7 +81,7 @@ interface ResourceData {
     isFullUrl?: boolean;
     keepUrlParams?: boolean;
     onSuccess?: Function;
-    mapData?: Function;
+    mapData?: DataMapper;
     digToData?: string;
     digToMaxPage?: string;
     digToPerms?: string;
@@ -85,6 +92,7 @@ interface ResourceData {
     digToValidationData?: string;
     digToRedirect?: string;
     custom?: LktObject;
+    modificationHandleType?: ModificationHandleType;
 }
 
 declare class ResourceNameValue {
@@ -149,7 +157,8 @@ declare class LktResource {
     private custom;
     private keepUrlParams;
     private isFullUrl;
-    constructor(data: ResourceData);
+    private modificationHandleType;
+    constructor(data: ResourceConfig);
     build(params: LktObject): ResourceBuild;
     call(params: LktObject): Promise<any>;
     parseResponse(response: AxiosResponse): HTTPResponse;
@@ -190,12 +199,12 @@ interface EnvironmentData {
     headers?: LktObject;
 }
 
-declare const createHTTPGetResource: (data: ResourceData) => LktResource | undefined;
-declare const createHTTPPostResource: (data: ResourceData) => LktResource | undefined;
-declare const createHTTPPutResource: (data: ResourceData) => LktResource | undefined;
-declare const createHTTPDeleteResource: (data: ResourceData) => LktResource | undefined;
-declare const createHTTPOpenResource: (data: ResourceData) => LktResource | undefined;
-declare const createHTTPDownloadResource: (data: ResourceData) => LktResource | undefined;
+declare const createHTTPGetResource: (data: ResourceConfig) => LktResource | undefined;
+declare const createHTTPPostResource: (data: ResourceConfig) => LktResource | undefined;
+declare const createHTTPPutResource: (data: ResourceConfig) => LktResource | undefined;
+declare const createHTTPDeleteResource: (data: ResourceConfig) => LktResource | undefined;
+declare const createHTTPOpenResource: (data: ResourceConfig) => LktResource | undefined;
+declare const createHTTPDownloadResource: (data: ResourceConfig) => LktResource | undefined;
 /**
  *
  * @param data
@@ -216,4 +225,4 @@ declare const LktHttpClient: {
     install: (app: any, options: LktObject) => void;
 };
 
-export { type HTTPResponse, ResourceCaller, type ResourceCallerConfig, createHTTPDeleteResource, createHTTPDownloadResource, createHTTPEnvironment, createHTTPGetResource, createHTTPOpenResource, createHTTPPostResource, createHTTPPutResource, debugLktHttpClient, LktHttpClient as default, existsHTTPResource, getHTTPEnvironment, getHTTPResource, httpCall };
+export { type HTTPResponse, ModificationHandleType, ResourceCaller, type ResourceCallerConfig, ResourceMethod, createHTTPDeleteResource, createHTTPDownloadResource, createHTTPEnvironment, createHTTPGetResource, createHTTPOpenResource, createHTTPPostResource, createHTTPPutResource, debugLktHttpClient, LktHttpClient as default, existsHTTPResource, getHTTPEnvironment, getHTTPResource, httpCall };

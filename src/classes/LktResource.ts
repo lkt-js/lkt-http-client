@@ -1,42 +1,43 @@
-import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
-import {successPromise} from 'lkt-control-tools';
-import {trim} from 'lkt-string-tools';
-import {LktObject} from 'lkt-ts-interfaces';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { successPromise } from 'lkt-control-tools';
+import { trim } from 'lkt-string-tools';
+import { LktObject } from 'lkt-ts-interfaces';
 
-import {paramsToString} from '../functions/helpers';
-import {ResourceData} from '../types/ResourceData';
-import {DataTypeValue} from '../value-objects/DataTypeValue';
-import {EnvironmentValue} from '../value-objects/EnvironmentValue';
-import {IsFileUploadValue} from '../value-objects/IsFileUploadValue';
-import {MaxPageDigValue} from "../value-objects/MaxPageDigValue";
-import {ResourceFetchStatus} from '../value-objects/ResourceFetchStatus';
-import {ResourceMethodValue} from '../value-objects/ResourceMethodValue';
-import {ResourceNameValue} from '../value-objects/ResourceNameValue';
-import {ResourceParamsValue} from '../value-objects/ResourceParamsValue';
-import {ResourceUrlValue} from '../value-objects/ResourceUrlValue';
-import {ResponseSuccessHookValue} from '../value-objects/ResponseSuccessHookValue';
-import {ReturnsFullResponseValue} from '../value-objects/ReturnsFullResponseValue';
-import {ReturnsResponseDigValue} from '../value-objects/ReturnsResponseDigValue';
-import {ValidResponseStatuses} from '../value-objects/ValidResponseStatuses';
-import {ResourceBuild} from './ResourceBuild';
-import {PermDigValue} from "../value-objects/PermDigValue";
-import {ModificationsDigValue} from "../value-objects/ModificationsDigValue";
-import {HTTPResponse} from "../types/HTTPResponse";
-import {MapDataValue} from "../value-objects/MapDataValue";
-import {DigToAutoReloadIdValue} from "../value-objects/DigToAutoReloadIdValue";
-import {CustomDataValue} from "../value-objects/CustomDataValue";
-import {mergeObjects} from "lkt-object-tools";
-import {debug} from "../functions/debug";
-import {KeepUrlParamsValue} from "../value-objects/KeepUrlParamsValue";
-import {Settings} from "../settings/Settings";
-import {IsFullUrlValue} from "../value-objects/IsFullUrlValue";
-import {ValidationMessageDigValue} from "../value-objects/ValidationMessageDigValue";
-import {ValidationDataDigValue} from "../value-objects/ValidationDataDigValue";
-import {ValidationCodeDigValue} from "../value-objects/ValidationCodeDigValue";
-import {DigToRedirectValue} from "../value-objects/DigToRedirectValue";
+import { paramsToString } from '../functions/helpers';
+import { ResourceConfig } from '../config/ResourceConfig';
+import { DataTypeValue } from '../value-objects/DataTypeValue';
+import { EnvironmentValue } from '../value-objects/EnvironmentValue';
+import { IsFileUploadValue } from '../value-objects/IsFileUploadValue';
+import { MaxPageDigValue } from '../value-objects/MaxPageDigValue';
+import { ResourceFetchStatus } from '../value-objects/ResourceFetchStatus';
+import { ResourceMethodValue } from '../value-objects/ResourceMethodValue';
+import { ResourceNameValue } from '../value-objects/ResourceNameValue';
+import { ResourceParamsValue } from '../value-objects/ResourceParamsValue';
+import { ResourceUrlValue } from '../value-objects/ResourceUrlValue';
+import { ResponseSuccessHookValue } from '../value-objects/ResponseSuccessHookValue';
+import { ReturnsFullResponseValue } from '../value-objects/ReturnsFullResponseValue';
+import { ReturnsResponseDigValue } from '../value-objects/ReturnsResponseDigValue';
+import { ValidResponseStatuses } from '../value-objects/ValidResponseStatuses';
+import { ResourceBuild } from './ResourceBuild';
+import { PermDigValue } from '../value-objects/PermDigValue';
+import { ModificationsDigValue } from '../value-objects/ModificationsDigValue';
+import { HTTPResponse } from '../types/HTTPResponse';
+import { MapDataValue } from '../value-objects/MapDataValue';
+import { DigToAutoReloadIdValue } from '../value-objects/DigToAutoReloadIdValue';
+import { CustomDataValue } from '../value-objects/CustomDataValue';
+import { mergeObjects } from 'lkt-object-tools';
+import { debug } from '../functions/debug';
+import { KeepUrlParamsValue } from '../value-objects/KeepUrlParamsValue';
+import { Settings } from '../settings/Settings';
+import { IsFullUrlValue } from '../value-objects/IsFullUrlValue';
+import { ValidationMessageDigValue } from '../value-objects/ValidationMessageDigValue';
+import { ValidationDataDigValue } from '../value-objects/ValidationDataDigValue';
+import { ValidationCodeDigValue } from '../value-objects/ValidationCodeDigValue';
+import { DigToRedirectValue } from '../value-objects/DigToRedirectValue';
+import { ModificationHandleType } from '../enums/ModificationHandleType';
 
 export class LktResource {
-    private readonly data: ResourceData;
+    private readonly data: ResourceConfig;
 
     private url: ResourceUrlValue;
     public name: ResourceNameValue;
@@ -62,8 +63,9 @@ export class LktResource {
     private custom: CustomDataValue;
     private keepUrlParams: KeepUrlParamsValue;
     private isFullUrl: IsFullUrlValue;
+    private modificationHandleType: ModificationHandleType = ModificationHandleType.Auto;
 
-    constructor(data: ResourceData) {
+    constructor(data: ResourceConfig) {
         this.data = data;
 
         this.url = new ResourceUrlValue(data.url);
@@ -90,6 +92,10 @@ export class LktResource {
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
         this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
+
+        if (data.modificationHandleType) {
+            this.modificationHandleType = data.modificationHandleType;
+        }
     }
 
     build(params: LktObject) {
@@ -258,9 +264,23 @@ export class LktResource {
 
         if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
 
-        if (this.mapData.hasActionDefined()) r = this.mapData.run(r, {
-            custom,
-        });
+        if (this.mapData.hasActionDefined()) {
+            r = this.mapData.run(r, {
+                custom,
+            });
+
+            if (Object.keys(modifications).length > 0) {
+                modifications = this.mapData.run(modifications, {
+                    custom,
+                });
+            }
+        }
+
+        switch (this.modificationHandleType) {
+            case ModificationHandleType.OverrideData:
+                r = modifications;
+                break;
+        }
 
         let redirect: string = '';
         if (this.digToRedirect.hasToDig()) redirect = this.digToRedirect.dig(r);

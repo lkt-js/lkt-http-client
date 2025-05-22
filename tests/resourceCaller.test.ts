@@ -1,6 +1,6 @@
 import {createHTTPEnvironment, createHTTPPostResource, ResourceCaller, ResourceCallerConfig} from "../src";
 import {EnvironmentData} from "../src/types/EnvironmentData";
-import {ResourceData} from "../src/types/ResourceData";
+import {ResourceConfig} from "../src/config/ResourceConfig";
 
 const envData: EnvironmentData = {
   url: 'http://localhost',
@@ -21,7 +21,7 @@ test('resource caller - non existing resource', () => {
 
 test('resource caller - existing resource', () => {
 
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     method: 'put',
@@ -48,7 +48,7 @@ test('resource caller - existing resource', () => {
 
 test('resource caller - update params', () => {
 
-  const resourceData: ResourceData = {
+  const resourceData: ResourceConfig = {
     url: '/api/test/create/{name}',
     name: 'create-test-item',
     method: 'put',
