@@ -59,7 +59,7 @@ declare enum ResourceMethod {
 
 type StatusValidator = (status: number) => boolean;
 
-type DataMapper = (data: LktObject | Array<LktObject>) => LktObject;
+type DataMapper = Function;
 
 declare enum ModificationHandleType {
     Auto = "auto",
