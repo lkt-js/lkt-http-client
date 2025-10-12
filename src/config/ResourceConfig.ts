@@ -32,6 +32,8 @@ export interface ResourceConfig {
   digToValidationMessage?: string
   digToValidationData?: string
   digToRedirect?: string
+  digToNewestDate?: string
+  digToOldestDate?: string
   custom?: LktObject
   modificationHandleType?: ModificationHandleType
 }

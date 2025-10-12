@@ -3,6 +3,7 @@ import {LktObject} from 'lkt-ts-interfaces';
 
 import {ResourceParamStack} from '../interfaces/ResourceParamStack';
 import {Settings} from '../settings/Settings';
+import { date, isDate } from 'lkt-date-tools';
 
 export class ResourceParamsValue {
     public readonly value: ResourceParamStack;
@@ -54,6 +55,11 @@ export class ResourceParamsValue {
                         );
                     }
                 }
+
+                if (isDate(value)) {
+                    value = date('Y-m-d H:i:s', value);
+                }
+
 
                 if (asFormData) {
                     r.append(storeKey, value);

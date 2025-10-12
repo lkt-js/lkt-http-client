@@ -35,6 +35,7 @@ import { ValidationDataDigValue } from '../value-objects/ValidationDataDigValue'
 import { ValidationCodeDigValue } from '../value-objects/ValidationCodeDigValue';
 import { DigToRedirectValue } from '../value-objects/DigToRedirectValue';
 import { ModificationHandleType } from '../enums/ModificationHandleType';
+import { DigToDateValue } from '../value-objects/DigToDateValue';
 
 export class LktResource {
     private readonly data: ResourceConfig;
@@ -60,6 +61,8 @@ export class LktResource {
     private digToValidationMessage: ValidationMessageDigValue;
     private digToValidationData: ValidationDataDigValue;
     private digToRedirect: DigToRedirectValue;
+    private digToNewestDate: DigToDateValue;
+    private digToOldestDate: DigToDateValue;
     private custom: CustomDataValue;
     private keepUrlParams: KeepUrlParamsValue;
     private isFullUrl: IsFullUrlValue;
@@ -89,6 +92,8 @@ export class LktResource {
         this.digToValidationMessage = new ValidationMessageDigValue(data.digToValidationMessage);
         this.digToValidationData = new ValidationDataDigValue(data.digToValidationData);
         this.digToRedirect = new DigToRedirectValue(data.digToRedirect);
+        this.digToNewestDate = new DigToDateValue(data.digToNewestDate);
+        this.digToOldestDate = new DigToDateValue(data.digToOldestDate);
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
         this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
@@ -262,6 +267,12 @@ export class LktResource {
         let validationData: LktObject = {};
         if (this.digToValidationData.hasToDig()) validationData = this.digToValidationData.dig(r);
 
+        let oldestDate: Date|undefined = undefined;
+        if (this.digToOldestDate.hasToDig()) oldestDate = this.digToOldestDate.dig(r);
+
+        let newestDate: Date|undefined = undefined;
+        if (this.digToNewestDate.hasToDig()) newestDate = this.digToNewestDate.dig(r);
+
         if (this.returnsResponseDig.hasToDig()) r = this.returnsResponseDig.dig(r);
 
         if (this.mapData.hasActionDefined()) {
@@ -295,7 +306,23 @@ export class LktResource {
 
         let contentType = <string>response.headers["content-type"];
 
-        const R: HTTPResponse = {data: r, maxPage, perms, modifications, custom, response, success: true, httpStatus: response.status, autoReloadId, contentType, validationCode, validationMessage, validationData};
+        const R: HTTPResponse = {
+            data: r,
+            maxPage,
+            perms,
+            modifications,
+            custom,
+            response,
+            success: true,
+            httpStatus: response.status,
+            autoReloadId,
+            contentType,
+            validationCode,
+            validationMessage,
+            validationData,
+            oldestDate,
+            newestDate,
+        };
         debug('Parsed response:', R);
 
         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
@@ -307,9 +334,23 @@ export class LktResource {
         let perms: string[] = [];
 
         let contentType = <string>error.response?.headers["content-type"];
-        const R: HTTPResponse = {data: {
+        return <HTTPResponse>{data: {
                 status: typeof error.response === 'undefined' ? 500 : error.response.status
-            }, maxPage: -1, perms, modifications: {}, custom: {}, response: error, success: false, httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status, autoReloadId: 0, contentType, validationCode: '', validationMessage: '', validationData: {}};
-        return R;
+            },
+            maxPage: -1,
+            perms,
+            modifications: {},
+            custom: {},
+            response: error,
+            success: false,
+            httpStatus: typeof error.response === 'undefined' ? 500 : error.response.status,
+            autoReloadId: 0,
+            contentType,
+            validationCode: '',
+            validationMessage: '',
+            validationData: {},
+            oldestDate: undefined,
+            newestDate: undefined,
+        };
     }
 }

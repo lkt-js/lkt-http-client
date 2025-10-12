@@ -15,4 +15,6 @@ export interface HTTPResponse {
   validationCode: string
   validationMessage: string
   validationData: LktObject
+  newestDate?: Date|undefined
+  oldestDate?: Date|undefined
 }
