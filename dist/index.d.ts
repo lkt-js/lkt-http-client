@@ -93,6 +93,7 @@ interface ResourceConfig {
     digToRedirect?: string;
     digToNewestDate?: string;
     digToOldestDate?: string;
+    digToToast?: string;
     custom?: LktObject;
     modificationHandleType?: ModificationHandleType;
 }
@@ -131,6 +132,7 @@ interface HTTPResponse {
     validationCode: string;
     validationMessage: string;
     validationData: LktObject;
+    toast?: LktObject | undefined;
     newestDate?: Date | undefined;
     oldestDate?: Date | undefined;
 }
@@ -160,6 +162,7 @@ declare class LktResource {
     private digToRedirect;
     private digToNewestDate;
     private digToOldestDate;
+    private digToToast;
     private custom;
     private keepUrlParams;
     private isFullUrl;

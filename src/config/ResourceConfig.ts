@@ -34,6 +34,7 @@ export interface ResourceConfig {
   digToRedirect?: string
   digToNewestDate?: string
   digToOldestDate?: string
+  digToToast?: string
   custom?: LktObject
   modificationHandleType?: ModificationHandleType
 }

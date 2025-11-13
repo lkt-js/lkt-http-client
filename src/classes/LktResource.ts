@@ -36,6 +36,7 @@ import { ValidationCodeDigValue } from '../value-objects/ValidationCodeDigValue'
 import { DigToRedirectValue } from '../value-objects/DigToRedirectValue';
 import { ModificationHandleType } from '../enums/ModificationHandleType';
 import { DigToDateValue } from '../value-objects/DigToDateValue';
+import { DigToToastValue } from '../value-objects/DigToToastValue';
 
 export class LktResource {
     private readonly data: ResourceConfig;
@@ -63,6 +64,7 @@ export class LktResource {
     private digToRedirect: DigToRedirectValue;
     private digToNewestDate: DigToDateValue;
     private digToOldestDate: DigToDateValue;
+    private digToToast: DigToToastValue;
     private custom: CustomDataValue;
     private keepUrlParams: KeepUrlParamsValue;
     private isFullUrl: IsFullUrlValue;
@@ -94,6 +96,7 @@ export class LktResource {
         this.digToRedirect = new DigToRedirectValue(data.digToRedirect);
         this.digToNewestDate = new DigToDateValue(data.digToNewestDate);
         this.digToOldestDate = new DigToDateValue(data.digToOldestDate);
+        this.digToToast = new DigToToastValue(data.digToToast);
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
         this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
@@ -222,7 +225,7 @@ export class LktResource {
 
                         let perms: string[] = [];
 
-                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, custom: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0, contentType: '', validationCode: '', validationMessage: '', validationData: {}};
+                        const R: HTTPResponse = {data: r.data, maxPage: 0, perms, modifications: {}, custom: {}, response: r, success: true, httpStatus: r.status, autoReloadId: 0, contentType: '', validationCode: '', validationMessage: '', validationData: {}, toast: undefined};
 
                         if (this.onSuccess.hasActionDefined()) return this.onSuccess.run(R);
                         return R;
@@ -269,6 +272,9 @@ export class LktResource {
 
         let oldestDate: Date|undefined = undefined;
         if (this.digToOldestDate.hasToDig()) oldestDate = this.digToOldestDate.dig(r);
+
+        let toast: LktObject|undefined = undefined;
+        if (this.digToToast.hasToDig()) toast = this.digToToast.dig(r);
 
         let newestDate: Date|undefined = undefined;
         if (this.digToNewestDate.hasToDig()) newestDate = this.digToNewestDate.dig(r);
@@ -322,6 +328,7 @@ export class LktResource {
             validationData,
             oldestDate,
             newestDate,
+            toast,
         };
         debug('Parsed response:', R);
 
@@ -334,6 +341,14 @@ export class LktResource {
         let perms: string[] = [];
 
         let contentType = <string>error.response?.headers["content-type"];
+
+        let responseData = this.returnsFullResponse.value ? error?.response : error?.response?.data;
+
+        let toast: LktObject|undefined = undefined;
+        if (typeof responseData === 'object') {
+            if (this.digToToast.hasToDig()) toast = this.digToToast.dig(responseData as unknown as LktObject);
+        }
+
         return <HTTPResponse>{data: {
                 status: typeof error.response === 'undefined' ? 500 : error.response.status
             },
@@ -351,6 +366,7 @@ export class LktResource {
             validationData: {},
             oldestDate: undefined,
             newestDate: undefined,
+            toast,
         };
     }
 }
