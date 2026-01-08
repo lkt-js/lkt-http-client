@@ -1,5 +1,6 @@
 import { LktObject } from 'lkt-ts-interfaces';
 import { AxiosError, AxiosResponse } from 'axios';
+import { Notification } from '../interfaces/Notification';
 
 export interface HTTPResponse {
   data: LktObject | any[]
@@ -18,4 +19,5 @@ export interface HTTPResponse {
   toast?: LktObject|undefined
   newestDate?: Date|undefined
   oldestDate?: Date|undefined
+  notifications?: Array<Notification>
 }

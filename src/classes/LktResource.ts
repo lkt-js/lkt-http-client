@@ -246,6 +246,8 @@ export class LktResource {
 
         let r = this.returnsFullResponse.value ? response : response.data;
 
+        let notifications = Array.isArray(r.notifications) ? r.notifications : [];
+
         let maxPage = -1;
         if (this.maxPageDig.hasToDig()) maxPage = this.maxPageDig.dig(r);
 
@@ -329,6 +331,7 @@ export class LktResource {
             oldestDate,
             newestDate,
             toast,
+            notifications,
         };
         debug('Parsed response:', R);
 
@@ -344,8 +347,13 @@ export class LktResource {
 
         let responseData = this.returnsFullResponse.value ? error?.response : error?.response?.data;
 
+        let notifications = [];
         let toast: LktObject|undefined = undefined;
+
         if (typeof responseData === 'object') {
+            //@ts-ignore
+            notifications = Array.isArray(responseData.notifications) ? responseData.notifications : [];
+
             if (this.digToToast.hasToDig()) toast = this.digToToast.dig(responseData as unknown as LktObject);
         }
 
@@ -367,6 +375,7 @@ export class LktResource {
             oldestDate: undefined,
             newestDate: undefined,
             toast,
+            notifications,
         };
     }
 }

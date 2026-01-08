@@ -118,6 +118,11 @@ declare class ResourceBuild {
     constructor(url: string, method: ResourceMethod, data: LktObject, auth: UserAuth, statusValidator: StatusValidator, headers: LktObject);
 }
 
+interface Notification {
+    category: 'toast' | 'message';
+    payload: LktObject;
+}
+
 interface HTTPResponse {
     data: LktObject | any[];
     maxPage: number;
@@ -135,6 +140,7 @@ interface HTTPResponse {
     toast?: LktObject | undefined;
     newestDate?: Date | undefined;
     oldestDate?: Date | undefined;
+    notifications?: Array<Notification>;
 }
 
 declare class LktResource {
