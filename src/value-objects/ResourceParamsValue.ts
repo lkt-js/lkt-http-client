@@ -27,16 +27,18 @@ export class ResourceParamsValue {
 
         keys.forEach((key) => {
             const defaultValue = this.value[key].default || null;
-            if (_Values[key] || defaultValue) {
+
+            let value = defaultValue;
+            if (typeof _Values[key] !== 'undefined') {
+                value = _Values[key];
+            }
+
+            if (typeof value !== 'undefined' && value !== null) {
                 const rename = this.value[key].renameTo || null;
                 const storeKey = rename || key;
-                let value = defaultValue;
-                if (typeof _Values[key] !== 'undefined') {
-                    value = _Values[key];
-                }
                 const type = this.value[key].type || null;
 
-                if (type && value !== null && typeof value !== undefined) {
+                if (type && value !== null && typeof value !== 'undefined') {
                     if (type === 'string' && typeof value !== 'string') {
                         value = toString(value);
                     } else if (type === 'number' && typeof value !== 'number') {
