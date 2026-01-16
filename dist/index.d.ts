@@ -240,4 +240,4 @@ declare const LktHttpClient: {
     install: (app: any, options: LktObject) => void;
 };
 
-export { type HTTPResponse, ModificationHandleType, ResourceCaller, type ResourceCallerConfig, ResourceMethod, createHTTPDeleteResource, createHTTPDownloadResource, createHTTPEnvironment, createHTTPGetResource, createHTTPOpenResource, createHTTPPostResource, createHTTPPutResource, debugLktHttpClient, LktHttpClient as default, existsHTTPResource, getHTTPEnvironment, getHTTPResource, httpCall };
+export { type HTTPResponse, ModificationHandleType, type Notification, ResourceCaller, type ResourceCallerConfig, ResourceMethod, createHTTPDeleteResource, createHTTPDownloadResource, createHTTPEnvironment, createHTTPGetResource, createHTTPOpenResource, createHTTPPostResource, createHTTPPutResource, debugLktHttpClient, LktHttpClient as default, existsHTTPResource, getHTTPEnvironment, getHTTPResource, httpCall };

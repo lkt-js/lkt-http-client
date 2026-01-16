@@ -21,6 +21,7 @@ export { ResourceCallerConfig } from './types/ResourceCallerConfig';
 export { HTTPResponse } from './types/HTTPResponse';
 export { ModificationHandleType } from './enums/ModificationHandleType';
 export { ResourceMethod } from './enums/ResourceMethod';
+export { Notification } from './interfaces/Notification';
 
 const LktHttpClient = {
   install: (app: any, options: LktObject) => {
