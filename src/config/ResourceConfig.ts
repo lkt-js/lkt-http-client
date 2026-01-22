@@ -37,4 +37,5 @@ export interface ResourceConfig {
   digToToast?: string
   custom?: LktObject
   modificationHandleType?: ModificationHandleType
+  appendClientLanguage?: boolean
 }

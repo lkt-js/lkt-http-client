@@ -69,6 +69,7 @@ export class LktResource {
     private keepUrlParams: KeepUrlParamsValue;
     private isFullUrl: IsFullUrlValue;
     private modificationHandleType: ModificationHandleType = ModificationHandleType.Auto;
+    private appendClientLanguage: boolean;
 
     constructor(data: ResourceConfig) {
         this.data = data;
@@ -100,6 +101,7 @@ export class LktResource {
         this.custom = new CustomDataValue(data.custom);
         this.keepUrlParams = new KeepUrlParamsValue(data.keepUrlParams);
         this.isFullUrl = new IsFullUrlValue(data.isFullUrl);
+        this.appendClientLanguage = data.appendClientLanguage === true;
 
         if (data.modificationHandleType) {
             this.modificationHandleType = data.modificationHandleType;
@@ -119,6 +121,12 @@ export class LktResource {
             this.isFileUpload.value,
             baseParams
         );
+
+        if (this.appendClientLanguage) {
+            //@ts-ignore
+            let clientLang = navigator.language || navigator.userLanguage;
+            data.clientLang = clientLang;
+        }
 
         debug('Prepared data', data);
 

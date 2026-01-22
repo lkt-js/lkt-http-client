@@ -96,6 +96,7 @@ interface ResourceConfig {
     digToToast?: string;
     custom?: LktObject;
     modificationHandleType?: ModificationHandleType;
+    appendClientLanguage?: boolean;
 }
 
 declare class ResourceNameValue {
@@ -173,6 +174,7 @@ declare class LktResource {
     private keepUrlParams;
     private isFullUrl;
     private modificationHandleType;
+    private appendClientLanguage;
     constructor(data: ResourceConfig);
     build(params: LktObject): ResourceBuild;
     call(params: LktObject): Promise<any>;
